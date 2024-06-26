@@ -1,0 +1,508 @@
+<?php
+
+namespace App\Controllers;
+
+use App\Controllers\BaseController;
+use App\Libraries\CIAuth;
+use App\Libraries\Hash;
+use App\Models\User;
+use App\Models\Setting;
+use App\Models\SocialMedia;
+use App\Models\Category;
+use App\Models\SubCategory;
+use Config\Services;
+use Mberecall\CodeIgniter\Library\Slugify;
+
+class AdminController extends BaseController
+{
+    protected $helpers = ['url', 'form', 'CIMail', 'CIFunctions'];
+
+    public function index()
+    {
+        $data = [
+            'pageTitle' => 'Dashboard'
+        ];
+        return view('backend/pages/home', $data);
+    }
+
+    public function logoutHandler()
+    {
+        CIAuth::forget();
+        return redirect()->route('admin.login.form')->with('fail', 'You are logged out');
+    }
+
+    //Profile view
+    public function profile()
+    {
+        $data = array(
+            'pageTitle' => 'Profile Page',
+        );
+        return view('/backend/pages/profile', $data);
+    }
+
+    public function updatePersonalDetails()
+    {
+        $request = \Config\Services::request();
+        $validation = \Config\Services::validation();
+        $user_id = CIAuth::id();
+
+
+        $this->validate([
+            'name' => [
+                'rules' => 'required',
+                'errors' => [
+                    'required' => 'Name is required'
+                ]
+            ],
+            'username' => [
+                'rules' => 'required|min_length[4]|is_unique[users.username,id,' . $user_id . ']',
+                'errors' => [
+                    'required' => 'username is required',
+                    'min_length' => 'must at least 4 character',
+                    'is_unique' => 'username is taken'
+
+                ]
+            ]
+        ]);
+
+        if ($validation->run() == FALSE) {
+            $errors = $validation->getErrors();
+            return json_encode(['status' => 0, 'error' => $errors]);
+        } else {
+            $user = new User();
+            $update = $user->where('id', $user_id)
+                ->set(['name' => $request->getVar('name'), 'username' => $request->getVar('username'), 'bio' => $request->getVar('bio')])
+                ->update();
+            if ($update) {
+                $user_info = $user->find($user_id);
+                return json_encode(['status' => 1, 'user_info' => $user_info, 'msg' => 'update sukses']);
+            } else {
+                return json_encode(['status' => 0, 'msg' => 'update gagal']);
+            }
+        }
+    }
+
+    // upload dan update picture database
+    public function updateProfilePicture()
+    {
+        $request = \Config\Services::request();
+        $user_id = CIAuth::id();
+        $user = new User();
+        $user_info = $user->asObject()->where('id', $user_id)->first();
+
+        $path = 'images/users/';
+        $file = $request->getFile('user_profile_file');
+        $old_picture = $user_info->picture;
+        $new_filename = 'UIMG_' . $user_id . $file->getRandomName();
+
+        if ($file->move($path, $new_filename)) {
+            if ($old_picture != null && file_exists($path . $old_picture)) {
+                unlink($path . $old_picture);
+            }
+            $user->where('id', $user_id)
+                ->set(['picture' => $new_filename])->update();
+
+            echo json_encode(['status' => 1, 'msg' => 'sukses']);
+        } else {
+            echo json_encode(['status' => 0, 'msg' => 'something went wrong']);
+        }
+    }
+
+    // method update password
+    public function changePassword()
+    {
+        $request = \Config\Services::request();
+        $validation = \Config\Services::validation();
+        $user_id = CIAuth::id();
+        $user = new User();
+        $user_info = $user->asObject()->where('id', $user_id)->first();
+
+        $this->validate([
+            'current_password' => [
+                'rules' => 'required|min_length[8]|check_current_password[current_password]',
+                'errors' => [
+                    'required' => 'Required',
+                    'min_length' => 'need at leas 8 character',
+                    'check_current_password' => 'password is wrong'
+                ]
+            ],
+            'new_password' => [
+                'rules' => 'required|min_length[8]|max_length[20]|is_password_strong[new_password]',
+                'errors' => [
+                    'required' => 'Please fill the new password',
+                    'min_length' => 'Password must be minimal 8 characters long',
+                    'max_length' => 'Maximum is 20 characters',
+                    'is_password_strong' => 'Password must have at least 1 Uppercase and Lowercase letter,1 Digit and 1 Special character'
+                ]
+            ],
+            'confirm_new_password' => [
+                'rules' => 'required|matches[new_password]',
+                'errors' => [
+                    'required' => 'required',
+                    'matches' => 'new password do not match'
+                ]
+            ]
+        ]);
+
+        if ($validation->run() == FALSE) {
+            //jika validasi error, kirim error ke front end
+            $errors = $validation->getErrors();
+            return json_encode(['status' => 0, 'error' => $errors]);
+            // return $this->response->setJSON(['status' => 0, 'error' => $errors]);
+        } else {
+            //update databse
+            $user->where('id', $user_id)
+                ->set(['password' => Hash::make($request->getVar('new_password'))])
+                ->update();
+
+            //kirim email notifikasi
+            $mail_data = array( //data untuk dikirim ke mail temlate
+                'user' => $user_info,
+                'new_password' => $request->getVar('new_password'),
+            );
+
+            $view = \Config\Services::renderer();
+            $mail_body = $view->setVar('mail_data', $mail_data)->render('mail-templates/password-changed-email-template');
+
+            //set config untuk phpmailer
+            $mailConfig = array(
+                'mail_from_email' => env('EMAIL_FROM_ADDRESS'),
+                'mail_from_name' => env('EMAIL_FROM_NAME'),
+                'mail_recipient_email' => $user_info->email,
+                'mail_recipient_name' => $user_info->name,
+                'mail_subject' => 'Reset Password',
+                'mail_body' => $mail_body
+            );
+
+            sendEmail($mailConfig);
+            return $this->response->setJSON(['status' => 1, 'msg' => 'your password has been changed']);
+        }
+    }
+
+    //view page setting
+    public function settings()
+    {
+        $data = [
+            'pageTitle' => 'Settings'
+        ];
+
+        return view('/backend/pages/settings', $data);
+    }
+
+    //function update general setting
+    public function updateGeneralSettings()
+    {
+        $request = \Config\Services::request();
+        $validation = \Config\Services::validation();
+        $settings_id = get_settings()->id;
+
+        $this->validate([
+            'blog_title' => [
+                'rules' => 'required',
+                'errors' => [
+                    'required' => 'cannot be empty'
+                ]
+            ],
+            'blog_email' => [
+                'rules' => 'required|valid_email',
+                'errors' => [
+                    'required' => 'cannot be empty',
+                    'valid_email' => 'email is not valid'
+                ]
+            ]
+        ]);
+
+        if ($validation->run() == FALSE) {
+            $errors = $validation->getErrors();
+            return $this->response->setJSON(['status' => 0, 'error' => $errors]);
+        } else {
+            $settings = new Setting();
+            $settings_id = $settings->asObject()->first()->id;
+            $update =   $settings->where('id', $settings_id)
+                ->set([
+                    'blog_title' => $request->getVar('blog_title'),
+                    'blog_email' => $request->getVar('blog_email'),
+                    'blog_phone' => $request->getVar('blog_phone'),
+                    'blog_meta_keywords' => $request->getVar('blog_meta_keywords'),
+                    'blog_meta_description' => $request->getVar('blog_meta_description'),
+                ])
+                ->update();
+
+            if ($update) {
+                return $this->response->setJSON(['status' => 1, 'msg' => 'update success']);
+            } else {
+                return json_encode(['status' => 0, 'msg' => 'something went wrong']);
+            }
+        }
+    }
+
+    // update blog logo 
+    public function updateBlogLogo()
+    {
+        $request = \Config\Services::request();
+        $settings = new Setting();
+
+        $path = 'images/blog/';
+        $file = $request->getFile('blog_logo');
+        $settings_data = $settings->asObject()->first();
+
+        $old_blog_logo = $settings_data->blog_logo;
+        $new_blog_logo = 'logo' . $file->getRandomName();
+
+        if ($file->move($path, $new_blog_logo)) {
+            if ($old_blog_logo != null && file_exists($path . $old_blog_logo)) {
+                unlink($path . $old_blog_logo);
+            }
+            $update = $settings->where('id', $settings_data->id)->set(['blog_logo' => $new_blog_logo])->update();
+            if ($update) {
+                echo json_encode(['status' => 1, 'msg' => 'logo diganti']);
+            } else {
+                echo json_encode(['status' => 1, 'msg' => 'logo error']);
+            }
+        } else {
+            return $this->response->setJSON(['status' => 0, 'msg' => 'something went wrong']);
+        }
+    }
+
+    //update favicon
+    public function updateBlogFavicon()
+    {
+        $request = \Config\Services::request();
+        $settings = new Setting();
+
+        $path = 'images/blog/';
+        $file = $request->getFile('blog_favicon');
+        $settings_data = $settings->asObject()->first();
+
+        $old_blog_favicon = $settings_data->blog_favicon;
+        $new_blog_favicon = 'favicon' . $file->getRandomName();
+
+        if ($file->move($path, $new_blog_favicon)) {
+            if ($old_blog_favicon != null && file_exists($path . $old_blog_favicon)) {
+                unlink($path . $old_blog_favicon);
+            }
+            $update = $settings->where('id', $settings_data->id)->set(['blog_favicon' => $new_blog_favicon])->update();
+            if ($update) {
+                echo json_encode(['status' => 1, 'msg' => 'favicon diganti']);
+            } else {
+                echo json_encode(['status' => 1, 'msg' => 'favicon error']);
+            }
+        } else {
+            return $this->response->setJSON(['status' => 0, 'msg' => 'something went wrong']);
+        }
+    }
+
+    //function update social media
+    public function updateSocialMedia()
+    {
+        $request = $this->request;
+        $validation = \Config\Services::validation();
+
+        if($request->isAJAX()){
+            $this->validate([
+                'facebook_url' => [
+                    'rules' => 'permit_empty|valid_url_strict',
+                    'errors' => [   
+                        'valid_url_strict' => 'Entered URL is not valid'
+                    ]
+                ],
+                'twitter_url' => [
+                    'rules' => 'permit_empty|valid_url_strict',
+                    'errors' => [
+                        'valid_url_strict' => 'Entered URL is not valid'
+                    ]
+                ],
+                'instagram_url' => [
+                    'rules' => 'permit_empty|valid_url_strict',
+                    'errors' => [
+                        'valid_url_strict' => 'Entered URL is not valid'
+                    ]
+                ],
+                'youtube_url' => [
+                    'rules' => 'permit_empty|valid_url_strict',
+                    'errors' => [
+                        'valid_url_strict' => 'Entered URL is not valid'
+                    ]
+                ],
+                'github_url' => [
+                    'rules' => 'permit_empty|valid_url_strict',
+                    'errors' => [
+                        'valid_url_strict' => 'Entered URL is not valid'
+                    ]
+                ],
+                'linkedin_url' => [
+                    'rules' => 'permit_empty|valid_url_strict',
+                    'errors' => [
+                        'valid_url_strict' => 'Entered URL is not valid'
+                    ]
+                ]
+            ]);
+        }
+
+        if ($validation->run() == FALSE) {
+            $errors = $validation->getErrors();
+            return $this->response->setJSON(['status' => 0, 'error' => $errors]);
+        } else {
+            $social_media = new SocialMedia(); //declare model
+            $social_media_id = $social_media->asObject()->first()->id;
+            
+            $update = $social_media->where('id',$social_media_id)
+                                    ->set([
+                                        'facebook_url'=>$request->getVar('facebook_url'),
+                                        'twitter_url'=>$request->getVar('twitter_url'),
+                                        'instagram_url'=>$request->getVar('instagram_url'),
+                                        'youtube_url'=>$request->getVar('youtube_url'),
+                                        'github_url'=>$request->getVar('github_url'),
+                                        'linkedin_url'=>$request->getVar('linkedin_url'),
+                                    ])->update();
+            if($update){
+                return $this->response->setJSON(['status' => 1, 'msg' => 'updated']);
+            }else{
+                return $this->response->setJSON(['status' => 0, 'msg' => 'something went wrong']);
+            }
+        }
+    }
+
+    // view categories page
+    public function categories(){
+        $data = [
+            'pageTitle'=>'Categories'
+        ];
+        return view('/backend/pages/categories',$data);
+    }
+
+    //insert category
+    public function addCategory(){
+        $request = \Config\Services::request();
+        $validation = \Config\Services::validation();
+
+        $this->validate([
+            'category_name'=>[
+                'rules'=>'required|is_unique[categories.name]',
+                'errors'=>[
+                    'required'=>'required',
+                    'is_unique'=>'This category already exist'
+                ]
+            ]
+        ]);
+
+        if($validation->run()==FALSE){
+            $errors=$validation->getErrors();
+            return $this->response->setJSON(['status'=>0,'error'=>$errors]);
+        }else{
+            $category = new Category();
+            if($request->getVar('category_id')!=""){
+                $save = $category->where('id',$request->getVar('category_id'))->set(['name'=>$request->getVar('category_name')])->update();
+                $msg = "Edit Success";
+            }else{
+                $save = $category->save(['name'=>$request->getVar('category_name')]);
+                $msg = "Add Success";
+            }
+
+            if($save){
+                return $this->response->setJSON(['status'=>1,'msg'=>$msg]);
+            }else{
+                return $this->response->setJSON(['status'=>1,'msg'=>'something went wrong']);
+            }
+        }
+    }
+
+    //get categories untuk datatabel
+    public function getCategories(){
+        $request= \Config\Services::request();
+        //print_r($request->getGet());
+        $length = $request->getGet('length');
+        $start = $request->getGet('start');
+        $search = $request->getGet('search')['value'];
+        $orderDir = $request->getGet('order')[0]['dir'];
+        $order = $request->getGet('order')[0]['column'];
+        switch ($order) {
+            case 0 :
+                $order = 'id';
+                break;
+            case 1 : 
+                $order = 'name';
+                break;
+        }
+
+        $category = new Category();
+        $category_length = $category->countAllResults();
+        if($search!=''){
+            $category_data = $category->orLike(['name'=>$search,'id'=>$search] )->asArray()->findAll($length,$start);
+            $category_filtered = count($category_data);
+        }else{
+            $category_data = $category->asArray()->orderBy($order,$orderDir)->findAll($length,$start);
+            $category_filtered = $category_length;
+        }
+        return $this->response->setJSON(["recordsTotal"=> $category_length ,
+  "recordsFiltered"=>$category_filtered,'data'=>$category_data]);
+    }
+
+    //delete categories
+    public function deleteCategory($id){
+        $category = new Category();
+        $delete = $category->delete(['id'=>$id]);
+        if($delete){
+            return $this->response->setJSON(['status'=>1,'msg'=>'Data Dihapus']);
+        }else{
+            return $this->response->setJSON(['status'=>0,'msg'=>'Gagal Hapus Data']);
+        }
+    }
+
+    public function getCategoryName(){
+        $id = $this->request->getVar('id');
+        $category = new Category();
+        $get_name = $category->asObject()->find($id);
+        return $this->response->setJSON(['name'=>$get_name->name]);
+    }
+
+    public function getParentCategories(){
+        $options = '<option value="">Uncategorized</option>';
+        $category = new Category();
+        $parent_categories = $category->findAll();
+
+        if($parent_categories){
+            $added_options="";
+            foreach ($parent_categories as $parent_category) {
+                $added_options='<option value="'.$parent_category['id'].'">'.$parent_category['name'].'</option>';
+                $options = $options.$added_options;
+            }
+            return $this->response->setJSON(['status'=>1,'data'=>$options]);
+        }
+    }
+
+    public function addSubCategory(){
+        $validation = \Config\Services::validation();
+
+        if($this->request->isAJAX()){
+            $this->validate([
+                'sub_category_name'=>[
+                    'rules'=>'required|is_unique[sub_categories.name]',
+                    'errors'=>[
+                        'required'=>'required',
+                        'is_unique'=>'This category already exist'
+                    ]
+                ]
+                ]);
+        }
+
+        if($validation->run()==FALSE){
+            $error = $validation->getErrors();
+            return $this->response->setJSON(['status'=>0,'error'=>$error]);
+        }else{
+            $subcategory = new SubCategory();
+            $request = $this->request;
+            $save = $subcategory->save([
+                'name'=>$request->getVar('sub_category_name'),
+                'slug'=>Slugify::model(SubCategory::class)->make($request->getVar('sub_category_name')),
+                'parent_cat'=>$request->getVar('parent_cat'),
+                'description'=>$request->getVar('sub_category_description')]);
+            if ($save){
+                return $this->response->setJSON(['status'=>1,'msg'=>'subcategory added']);
+            }else{
+                return $this->response->setJSON(['status'=>1,'msg'=>'something went wrong']);    
+            }
+        }
+        
+    }
+}
