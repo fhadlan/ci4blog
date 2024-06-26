@@ -27,7 +27,7 @@
                     </div>
                     <div class="form-group">
                         <label for="">Description</label>
-                        <textarea name="sub_category_description" id="" class="form-control" placeholder="Description..."></textarea>
+                        <textarea name="sub_category_description" id="sub_category_description" class="form-control" placeholder="Description..."></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">

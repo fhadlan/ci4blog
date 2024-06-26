@@ -70,26 +70,16 @@
                 </div>
             </div>
             <div class="card-body">
-                <table class="table table-small table-borderless table-hover table-striped">
+                <table class="table table-small table-borderless table-hover table-striped" id="sub_categories_table">
                     <thead>
                         <tr>
                             <th scope="col">#</th>
                             <th scope="col">Name</th>
                             <th scope="col">Parent Category</th>
-                            <th scope="col">Posts</th>
+                            <!--    <th scope="col">Posts</th> -->
                             <th scope="col">Action</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td scope="row">1</td>
-                            <td>------</td>
-                            <td>------</td>
-                            <td>------</td>
-                            <td>------</td>
-
-                        </tr>
-                    </tbody>
                 </table>
             </div>
         </div>
@@ -144,10 +134,45 @@
         ]
     })
 
+    let subdataTable = $('#sub_categories_table').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: "<?= route_to('get-sub-categories') ?>",
+        columns: [{
+                data: 'id'
+            },
+            {
+                data: 'sbname'
+            },
+            {
+                data: 'name'
+            },
+            {
+                data: 'id',
+                "render": function(data) {
+                    let id = data;
+                    return `<button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#sub_category_modal" id="edit" onclick="editSubCategory(` + id + `)"><i class="bi bi-pencil"></i></button>
+                                    <button class="btn btn-danger btn-sm" id="delete" onclick="deleteCategory(` + id + `)"><i class="bi bi-trash"/></i></button>`;
+                },
+                orderable: false
+                // className: 'dt-center editor-delete',
+                // defaultContent: '<button class="btn btn-danger btn-sm"><i class="bi bi-trash"/></button>',
+                // orderable: false
+            }
+        ]
+    })
 
+
+    function populateParentCat(){
+        $.get("<?= route_to('get-parent-categories') ?>", function(response) {
+            $('#parent_cat').html(response.data);
+        })
+    }
 
     $(document).ready(function() {
         dataTable
+        subdataTable
+        populateParentCat();
     })
 
     //fungsi hapus kategory (tombol delete)
@@ -173,7 +198,18 @@
         $('#btnSubmit').text('Add');
         $('#category_id').val('');
         $('#category_name').val('');
+        $('#category_modal').find('span.error-text').text('');
+
         dataTable.ajax.reload();
+    })
+
+    $('#sub_category_modal').on('hidden.bs.modal', function(e) {
+        e.preventDefault();
+        $('#sub_category_modal').find('.modal-title').html('Add Sub Category');
+        $('#add_sub_category_form').find('#btnSubmit').text('Add');
+        $('#sub_category_modal').find('span.error-text').text('');
+        $('#add_sub_category_form')[0].reset();
+        subdataTable.ajax.reload();
     })
 
     //fungsi tambah kategori
@@ -181,25 +217,6 @@
         e.preventDefault();
         let form = this;
         let formData = new FormData(form);
-        saveCategory(form, formData);
-    });
-
-    //untuk membuka form category dan populate data untuk diedit
-    function editCategory(id) {
-        event.preventDefault();
-        $('#category_modal').find('.modal-title').html('Edit Data Category');
-        $('#btnSubmit').text('Edit');
-        url = "<?= route_to('get-category-name') ?>";
-        $.get(url, {
-            'id': id
-        }, function(response) {
-            $('#category_name').val(response.name);
-            $('#category_id').val(id);
-        })
-    }
-
-    //run ajax to save or update data
-    function saveCategory(form, formData) {
         $.ajax({
             url: $(form).attr('action'),
             method: $(form).attr('method'),
@@ -226,14 +243,39 @@
                 }
             }
         });
+    });
+
+    //untuk membuka form category dan populate data untuk diedit
+    function editCategory(id) {
+        event.preventDefault();
+        $('#category_modal').find('.modal-title').html('Edit Data Category');
+        $('#btnSubmit').text('Edit');
+        url = "<?= route_to('get-category-name') ?>";
+        $.get(url, {
+            'id': id
+        }, function(response) {
+            $('#category_name').val(response.name);
+            $('#category_id').val(id);
+        })
     }
 
-    //populate data category parent ketika modal sub category open
-    $('#sub_category_modal').on('shown.bs.modal', function() {
-        $.get("<?= route_to('get-parent-categories') ?>", function(response) {
-            $('#parent_cat').html(response.data);
+    function editSubCategory(id){
+        event.preventDefault();
+        
+        $('#sub_category_modal').find('.modal-title').html('Edit Data Sub Category');
+        $('#sub_category_modal').find('#btnSubmit').text('Edit');
+        url = "<?= route_to('get-sub-category-edit') ?>";
+        $.get(url, {
+            'id': id
+        }, function(response) {
+            $('#sub_category_id').val(response.id);
+            $('#parent_cat').val(response.parent_cat);
+            $('#sub_category_name').val(response.name);
+            $('#sub_category_description').val(response.description);
+            
+            console.log(response)
         })
-    })
+    }
 
     $('#add_sub_category_form').on('submit', function() {
         event.preventDefault();

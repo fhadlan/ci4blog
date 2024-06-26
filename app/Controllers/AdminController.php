@@ -298,11 +298,11 @@ class AdminController extends BaseController
         $request = $this->request;
         $validation = \Config\Services::validation();
 
-        if($request->isAJAX()){
+        if ($request->isAJAX()) {
             $this->validate([
                 'facebook_url' => [
                     'rules' => 'permit_empty|valid_url_strict',
-                    'errors' => [   
+                    'errors' => [
                         'valid_url_strict' => 'Entered URL is not valid'
                     ]
                 ],
@@ -345,71 +345,74 @@ class AdminController extends BaseController
         } else {
             $social_media = new SocialMedia(); //declare model
             $social_media_id = $social_media->asObject()->first()->id;
-            
-            $update = $social_media->where('id',$social_media_id)
-                                    ->set([
-                                        'facebook_url'=>$request->getVar('facebook_url'),
-                                        'twitter_url'=>$request->getVar('twitter_url'),
-                                        'instagram_url'=>$request->getVar('instagram_url'),
-                                        'youtube_url'=>$request->getVar('youtube_url'),
-                                        'github_url'=>$request->getVar('github_url'),
-                                        'linkedin_url'=>$request->getVar('linkedin_url'),
-                                    ])->update();
-            if($update){
+
+            $update = $social_media->where('id', $social_media_id)
+                ->set([
+                    'facebook_url' => $request->getVar('facebook_url'),
+                    'twitter_url' => $request->getVar('twitter_url'),
+                    'instagram_url' => $request->getVar('instagram_url'),
+                    'youtube_url' => $request->getVar('youtube_url'),
+                    'github_url' => $request->getVar('github_url'),
+                    'linkedin_url' => $request->getVar('linkedin_url'),
+                ])->update();
+            if ($update) {
                 return $this->response->setJSON(['status' => 1, 'msg' => 'updated']);
-            }else{
+            } else {
                 return $this->response->setJSON(['status' => 0, 'msg' => 'something went wrong']);
             }
         }
     }
 
     // view categories page
-    public function categories(){
+    public function categories()
+    {
         $data = [
-            'pageTitle'=>'Categories'
+            'pageTitle' => 'Categories'
         ];
-        return view('/backend/pages/categories',$data);
+        return view('/backend/pages/categories', $data);
     }
 
     //insert category
-    public function addCategory(){
+    public function addCategory()
+    {
         $request = \Config\Services::request();
         $validation = \Config\Services::validation();
 
         $this->validate([
-            'category_name'=>[
-                'rules'=>'required|is_unique[categories.name]',
-                'errors'=>[
-                    'required'=>'required',
-                    'is_unique'=>'This category already exist'
+            'category_name' => [
+                'rules' => 'required|is_unique[categories.name]',
+                'errors' => [
+                    'required' => 'required',
+                    'is_unique' => 'This category already exist'
                 ]
             ]
         ]);
 
-        if($validation->run()==FALSE){
-            $errors=$validation->getErrors();
-            return $this->response->setJSON(['status'=>0,'error'=>$errors]);
-        }else{
+        if ($validation->run() == FALSE) {
+            $errors = $validation->getErrors();
+            return $this->response->setJSON(['status' => 0, 'error' => $errors]);
+        } else {
             $category = new Category();
-            if($request->getVar('category_id')!=""){
-                $save = $category->where('id',$request->getVar('category_id'))->set(['name'=>$request->getVar('category_name')])->update();
+            if ($request->getVar('category_id') != "") {
+                $save = $category->where('id', $request->getVar('category_id'))->set(['name' => $request->getVar('category_name')])->update();
                 $msg = "Edit Success";
-            }else{
-                $save = $category->save(['name'=>$request->getVar('category_name')]);
+            } else {
+                $save = $category->save(['name' => $request->getVar('category_name')]);
                 $msg = "Add Success";
             }
 
-            if($save){
-                return $this->response->setJSON(['status'=>1,'msg'=>$msg]);
-            }else{
-                return $this->response->setJSON(['status'=>1,'msg'=>'something went wrong']);
+            if ($save) {
+                return $this->response->setJSON(['status' => 1, 'msg' => $msg]);
+            } else {
+                return $this->response->setJSON(['status' => 1, 'msg' => 'something went wrong']);
             }
         }
     }
 
     //get categories untuk datatabel
-    public function getCategories(){
-        $request= \Config\Services::request();
+    public function getCategories()
+    {
+        $request = \Config\Services::request();
         //print_r($request->getGet());
         $length = $request->getGet('length');
         $start = $request->getGet('start');
@@ -417,92 +420,156 @@ class AdminController extends BaseController
         $orderDir = $request->getGet('order')[0]['dir'];
         $order = $request->getGet('order')[0]['column'];
         switch ($order) {
-            case 0 :
+            case 0:
                 $order = 'id';
                 break;
-            case 1 : 
+            case 1:
                 $order = 'name';
                 break;
         }
 
         $category = new Category();
         $category_length = $category->countAllResults();
-        if($search!=''){
-            $category_data = $category->orLike(['name'=>$search,'id'=>$search] )->asArray()->findAll($length,$start);
+        if ($search != '') {
+            $category_data = $category->orLike(['name' => $search, 'id' => $search])->asArray()->orderBy($order, $orderDir)->findAll($length, $start);
             $category_filtered = count($category_data);
-        }else{
-            $category_data = $category->asArray()->orderBy($order,$orderDir)->findAll($length,$start);
+        } else {
+            $category_data = $category->asArray()->orderBy($order, $orderDir)->findAll($length, $start);
             $category_filtered = $category_length;
         }
-        return $this->response->setJSON(["recordsTotal"=> $category_length ,
-  "recordsFiltered"=>$category_filtered,'data'=>$category_data]);
+        return $this->response->setJSON([
+            "recordsTotal" => $category_length,
+            "recordsFiltered" => $category_filtered, 'data' => $category_data
+        ]);
     }
 
     //delete categories
-    public function deleteCategory($id){
+    public function deleteCategory($id)
+    {
         $category = new Category();
-        $delete = $category->delete(['id'=>$id]);
-        if($delete){
-            return $this->response->setJSON(['status'=>1,'msg'=>'Data Dihapus']);
-        }else{
-            return $this->response->setJSON(['status'=>0,'msg'=>'Gagal Hapus Data']);
+        $delete = $category->delete(['id' => $id]);
+        if ($delete) {
+            return $this->response->setJSON(['status' => 1, 'msg' => 'Data Dihapus']);
+        } else {
+            return $this->response->setJSON(['status' => 0, 'msg' => 'Gagal Hapus Data']);
         }
     }
 
-    public function getCategoryName(){
+    public function getCategoryName()
+    {
         $id = $this->request->getVar('id');
         $category = new Category();
         $get_name = $category->asObject()->find($id);
-        return $this->response->setJSON(['name'=>$get_name->name]);
+        return $this->response->setJSON(['name' => $get_name->name]);
     }
 
-    public function getParentCategories(){
+    public function getParentCategories()
+    {
         $options = '<option value="">Uncategorized</option>';
         $category = new Category();
         $parent_categories = $category->findAll();
 
-        if($parent_categories){
-            $added_options="";
+        if ($parent_categories) {
+            $added_options = "";
             foreach ($parent_categories as $parent_category) {
-                $added_options='<option value="'.$parent_category['id'].'">'.$parent_category['name'].'</option>';
-                $options = $options.$added_options;
+                $added_options = '<option value="' . $parent_category['id'] . '">' . $parent_category['name'] . '</option>';
+                $options = $options . $added_options;
             }
-            return $this->response->setJSON(['status'=>1,'data'=>$options]);
+            return $this->response->setJSON(['status' => 1, 'data' => $options]);
         }
     }
 
-    public function addSubCategory(){
+    public function addSubCategory()
+    {
         $validation = \Config\Services::validation();
-
-        if($this->request->isAJAX()){
+        if ($this->request->isAJAX()) {
             $this->validate([
-                'sub_category_name'=>[
-                    'rules'=>'required|is_unique[sub_categories.name]',
-                    'errors'=>[
-                        'required'=>'required',
-                        'is_unique'=>'This category already exist'
+                'sub_category_id'=>[
+                    'rules'=>'permit_empty'
+                ],
+                'sub_category_name' => [
+                    'rules' => 'required|is_unique[sub_categories.name,id,{sub_category_id}]',
+                    'errors' => [
+                        'required' => 'required',
+                        'is_unique' => 'This category already exist'
                     ]
                 ]
-                ]);
+            ]);
         }
 
-        if($validation->run()==FALSE){
+        if ($validation->run() == FALSE) {
             $error = $validation->getErrors();
-            return $this->response->setJSON(['status'=>0,'error'=>$error]);
-        }else{
+            return $this->response->setJSON(['status' => 0, 'error' => $error]);
+        } else {
             $subcategory = new SubCategory();
             $request = $this->request;
-            $save = $subcategory->save([
-                'name'=>$request->getVar('sub_category_name'),
-                'slug'=>Slugify::model(SubCategory::class)->make($request->getVar('sub_category_name')),
-                'parent_cat'=>$request->getVar('parent_cat'),
-                'description'=>$request->getVar('sub_category_description')]);
-            if ($save){
-                return $this->response->setJSON(['status'=>1,'msg'=>'subcategory added']);
-            }else{
-                return $this->response->setJSON(['status'=>1,'msg'=>'something went wrong']);    
+            if ($request->getVar('sub_category_id') != '') {
+                $save = $subcategory->where(['id' => $request->getVar('sub_category_id')])
+                    ->set([
+                        'name' => $request->getVar('sub_category_name'),
+                        'slug' => Slugify::model(SubCategory::class)->make($request->getVar('sub_category_name')),
+                        'parent_cat' => $request->getVar('parent_cat'),
+                        'description' => $request->getVar('sub_category_description')
+                    ])->update();
+                    $msg = 'Sub category edited';
+            } else {
+                $save = $subcategory->save([
+                    'name' => $request->getVar('sub_category_name'),
+                    'slug' => Slugify::model(SubCategory::class)->make($request->getVar('sub_category_name')),
+                    'parent_cat' => $request->getVar('parent_cat'),
+                    'description' => $request->getVar('sub_category_description')
+                ]);
+                $msg = 'sub category added';
+            }
+            if ($save) {
+                return $this->response->setJSON(['status' => 1, 'msg' => $msg]);
+            } else {
+                return $this->response->setJSON(['status' => 1, 'msg' => $msg]);
             }
         }
-        
+    }
+
+    public function getSubCategories()
+    {
+        $request = \Config\Services::request();
+        //print_r($request->getGet());
+        $length = $request->getGet('length');
+        $start = $request->getGet('start');
+        $search = $request->getGet('search')['value'];
+        $orderDir = $request->getGet('order')[0]['dir'];
+        $order = $request->getGet('order')[0]['column'];
+        switch ($order) {
+            case 0:
+                $order = 'sub_categories.id';
+                break;
+            case 1:
+                $order = 'sub_categories.name';
+                break;
+                case 2:
+                    $order = 'categories.name';
+                    break;
+        }
+
+        $subcategory = new SubCategory();
+        $subcategory_length = $subcategory->countAllResults();
+        if ($search != '') {
+            $subcategory_data = $subcategory->select('sub_categories.id,sub_categories.name as sbname,categories.name')->orLike(['sub_categories.name' => $search,'categories.name' => $search, 'sub_categories.id' => $search])->join('categories', 'categories.id=sub_categories.parent_cat')->asArray()->orderBy($order, $orderDir)->findAll($length, $start);
+            $subcategory_filtered = count($subcategory_data);
+        } else {
+            $subcategory_data = $subcategory->select('sub_categories.id,sub_categories.name as sbname,categories.name')->asArray()->orderBy($order, $orderDir)->join('categories', 'categories.id=sub_categories.parent_cat')->findAll($length, $start);
+            $subcategory_filtered = $subcategory_length;
+        }
+        return $this->response->setJSON([
+            "recordsTotal" => $subcategory_length,
+            "recordsFiltered" => $subcategory_filtered, 'data' => $subcategory_data
+        ]);
+    }
+
+    public function getSubCategoryEdit()
+    {
+        $id = $this->request->getVar('id');
+        $subcategory = new SubCategory();
+        $get_data = $subcategory->asObject()->find($id);
+        return $this->response->setJSON($get_data);
     }
 }
