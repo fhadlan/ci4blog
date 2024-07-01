@@ -572,4 +572,16 @@ class AdminController extends BaseController
         $get_data = $subcategory->asObject()->find($id);
         return $this->response->setJSON($get_data);
     }
+
+    public function deleteSubCategory()
+    {
+        $id = $this->request->getVar('id');
+        $subcategory = new SubCategory();
+        $delete = $subcategory->delete(['id' => $id]);
+        if ($delete) {
+            return $this->response->setJSON(['status' => 1, 'msg' => 'Data Dihapus']);
+        } else {
+            return $this->response->setJSON(['status' => 0, 'msg' => 'Gagal Hapus Data']);
+        }
+    }
 }

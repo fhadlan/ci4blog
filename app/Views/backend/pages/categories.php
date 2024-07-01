@@ -152,7 +152,7 @@
                 "render": function(data) {
                     let id = data;
                     return `<button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#sub_category_modal" id="edit" onclick="editSubCategory(` + id + `)"><i class="bi bi-pencil"></i></button>
-                                    <button class="btn btn-danger btn-sm" id="delete" onclick="deleteCategory(` + id + `)"><i class="bi bi-trash"/></i></button>`;
+                                    <button class="btn btn-danger btn-sm" id="delete" onclick="deleteSubCategory(` + id + `)"><i class="bi bi-trash"/></i></button>`;
                 },
                 orderable: false
                 // className: 'dt-center editor-delete',
@@ -191,6 +191,17 @@
         }
     }
 
+    //fungsi hapus sub kategory (tombol delete)
+    function deleteSubCategory(id) {
+        if (confirm(`Hapus data id ` + id)) {
+            $.get("<?= route_to('delete-subcategory')?>", {
+            'id': id
+        }, function(response) {
+            alert(response.msg);
+            subdataTable.ajax.reload();
+        })
+        }
+    }
     //fungsi ketika modal category diclose
     $('#category_modal').on('hidden.bs.modal', function(e) {
         e.preventDefault();

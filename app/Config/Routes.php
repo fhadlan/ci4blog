@@ -33,6 +33,7 @@ $routes->group('admin', static function ($routes) {
         $routes->post('add-sub-category','AdminController::addSubCategory',['as'=>'add-sub-category']);
         $routes->get('get-sub-categories','AdminController::getSubCategories',['as'=>'get-sub-categories']);
         $routes->get('get-sub-category-edit','AdminController::getSubCategoryEdit',['as'=>'get-sub-category-edit']);
+        $routes->get('delete-subcategory','AdminController::deleteSubCategory',['as'=>'delete-subcategory']);
     });
 
     $routes->group('', ['filter' => 'cifilter:guest'], static function ($routes) {
