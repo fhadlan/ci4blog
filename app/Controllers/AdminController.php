@@ -421,20 +421,22 @@ class AdminController extends BaseController
         $order = $request->getGet('order')[0]['column'];
         switch ($order) {
             case 0:
-                $order = 'id';
+                $order = 'categories.id';
                 break;
             case 1:
-                $order = 'name';
+                $order = 'categories.name';
                 break;
         }
 
         $category = new Category();
+        $subcategory = new SubCategory();
+        $countSubCategory = $subcategory->findAll();
         $category_length = $category->countAllResults();
         if ($search != '') {
-            $category_data = $category->orLike(['name' => $search, 'id' => $search])->asArray()->orderBy($order, $orderDir)->findAll($length, $start);
+            $category_data = $category->select('categories.id,categories.name,count(sub_categories.parent_cat) as subcategory')->join('sub_categories', 'sub_categories.parent_cat=categories.id','left')->orLike(['categories.name' => $search, 'categories.id' => $search])->asArray()->orderBy($order, $orderDir)->groupBy('categories.id')->findAll($length, $start);
             $category_filtered = count($category_data);
         } else {
-            $category_data = $category->asArray()->orderBy($order, $orderDir)->findAll($length, $start);
+            $category_data = $category->select('categories.id,categories.name,count(sub_categories.parent_cat) as subcategory')->join('sub_categories', 'sub_categories.parent_cat=categories.id','left')->asArray()->orderBy($order, $orderDir)->groupBy('categories.id')->findAll($length, $start);
             $category_filtered = $category_length;
         }
         return $this->response->setJSON([
@@ -465,7 +467,7 @@ class AdminController extends BaseController
 
     public function getParentCategories()
     {
-        $options = '<option value="">Uncategorized</option>';
+        $options = '<option value="0">Uncategorized</option>';
         $category = new Category();
         $parent_categories = $category->findAll();
 
@@ -553,10 +555,10 @@ class AdminController extends BaseController
         $subcategory = new SubCategory();
         $subcategory_length = $subcategory->countAllResults();
         if ($search != '') {
-            $subcategory_data = $subcategory->select('sub_categories.id,sub_categories.name as sbname,categories.name')->orLike(['sub_categories.name' => $search,'categories.name' => $search, 'sub_categories.id' => $search])->join('categories', 'categories.id=sub_categories.parent_cat')->asArray()->orderBy($order, $orderDir)->findAll($length, $start);
+            $subcategory_data = $subcategory->select('sub_categories.id,sub_categories.name as sbname,categories.name')->orLike(['sub_categories.name' => $search,'categories.name' => $search, 'sub_categories.id' => $search])->join('categories', 'categories.id=sub_categories.parent_cat','left')->asArray()->orderBy($order, $orderDir)->findAll($length, $start);
             $subcategory_filtered = count($subcategory_data);
         } else {
-            $subcategory_data = $subcategory->select('sub_categories.id,sub_categories.name as sbname,categories.name')->asArray()->orderBy($order, $orderDir)->join('categories', 'categories.id=sub_categories.parent_cat')->findAll($length, $start);
+            $subcategory_data = $subcategory->select('sub_categories.id,sub_categories.name as sbname,categories.name')->asArray()->orderBy($order, $orderDir)->join('categories', 'categories.id=sub_categories.parent_cat','left')->findAll($length, $start);
             $subcategory_filtered = $subcategory_length;
         }
         return $this->response->setJSON([

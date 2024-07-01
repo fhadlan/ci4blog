@@ -45,7 +45,7 @@
                         <tr>
                             <td scope='col'>#</td>
                             <td scope='col'>Name</td>
-                            <!-- <td scope='col'>Sub Categories</td> -->
+                            <td scope='col'>Sub Categories</td>
                             <td scope='col'>Actions</td>
                         </tr>
                     </thead>
@@ -118,6 +118,9 @@
             },
             {
                 data: 'name'
+            },
+            {
+                data: 'subcategory'
             },
             {
                 data: 'id',
@@ -210,7 +213,7 @@
         $('#category_id').val('');
         $('#category_name').val('');
         $('#category_modal').find('span.error-text').text('');
-
+        subdataTable.ajax.reload();
         dataTable.ajax.reload();
     })
 
@@ -220,6 +223,7 @@
         $('#add_sub_category_form').find('#btnSubmit').text('Add');
         $('#sub_category_modal').find('span.error-text').text('');
         $('#add_sub_category_form')[0].reset();
+        dataTable.ajax.reload();
         subdataTable.ajax.reload();
     })
 
@@ -283,8 +287,6 @@
             $('#parent_cat').val(response.parent_cat);
             $('#sub_category_name').val(response.name);
             $('#sub_category_description').val(response.description);
-            
-            console.log(response)
         })
     }
 
@@ -315,5 +317,9 @@
             }
         })
     })
+
+    $('#sub_categories_table').find('tbody').sortable({
+
+    });
 </script>
 <?php $this->endSection() ?>
