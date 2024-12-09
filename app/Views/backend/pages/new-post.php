@@ -23,8 +23,8 @@
     </div>
 </div>
 
-<form action="" method="post" enctype="multipart/form-data" autocomplete="off">
-    <input type="hidden" name=<?= csrf_token() ?> value="<?= csrf_hash() ?>">
+<form action="<?= route_to('create-post') ?>" method="post" enctype="multipart/form-data" autocomplete="off">
+    <?= csrf_field() ?>
     <div class="row">
         <div class="col-md-9">
             <div class="card card-box mb-2">

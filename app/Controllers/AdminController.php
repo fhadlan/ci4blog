@@ -598,4 +598,6 @@ class AdminController extends BaseController
         ];
         return view('backend/pages/new-post', $data);
     }
+
+    public function createPost() {}
 }
