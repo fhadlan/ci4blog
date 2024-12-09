@@ -34,6 +34,10 @@ $routes->group('admin', static function ($routes) {
         $routes->get('get-sub-categories','AdminController::getSubCategories',['as'=>'get-sub-categories']);
         $routes->get('get-sub-category-edit','AdminController::getSubCategoryEdit',['as'=>'get-sub-category-edit']);
         $routes->get('delete-subcategory','AdminController::deleteSubCategory',['as'=>'delete-subcategory']);
+
+        $routes->group('posts', static function ($routes) {
+            $routes->get('new-post','AdminController::addPost',['as'=>'new-post']);    
+        });
     });
 
     $routes->group('', ['filter' => 'cifilter:guest'], static function ($routes) {

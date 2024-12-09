@@ -433,15 +433,16 @@ class AdminController extends BaseController
         $countSubCategory = $subcategory->findAll();
         $category_length = $category->countAllResults();
         if ($search != '') {
-            $category_data = $category->select('categories.id,categories.name,count(sub_categories.parent_cat) as subcategory')->join('sub_categories', 'sub_categories.parent_cat=categories.id','left')->orLike(['categories.name' => $search, 'categories.id' => $search])->asArray()->orderBy($order, $orderDir)->groupBy('categories.id')->findAll($length, $start);
+            $category_data = $category->select('categories.id,categories.name,count(sub_categories.parent_cat) as subcategory')->join('sub_categories', 'sub_categories.parent_cat=categories.id', 'left')->orLike(['categories.name' => $search, 'categories.id' => $search])->asArray()->orderBy($order, $orderDir)->groupBy('categories.id')->findAll($length, $start);
             $category_filtered = count($category_data);
         } else {
-            $category_data = $category->select('categories.id,categories.name,count(sub_categories.parent_cat) as subcategory')->join('sub_categories', 'sub_categories.parent_cat=categories.id','left')->asArray()->orderBy($order, $orderDir)->groupBy('categories.id')->findAll($length, $start);
+            $category_data = $category->select('categories.id,categories.name,count(sub_categories.parent_cat) as subcategory')->join('sub_categories', 'sub_categories.parent_cat=categories.id', 'left')->asArray()->orderBy($order, $orderDir)->groupBy('categories.id')->findAll($length, $start);
             $category_filtered = $category_length;
         }
         return $this->response->setJSON([
             "recordsTotal" => $category_length,
-            "recordsFiltered" => $category_filtered, 'data' => $category_data
+            "recordsFiltered" => $category_filtered,
+            'data' => $category_data
         ]);
     }
 
@@ -486,8 +487,8 @@ class AdminController extends BaseController
         $validation = \Config\Services::validation();
         if ($this->request->isAJAX()) {
             $this->validate([
-                'sub_category_id'=>[
-                    'rules'=>'permit_empty'
+                'sub_category_id' => [
+                    'rules' => 'permit_empty'
                 ],
                 'sub_category_name' => [
                     'rules' => 'required|is_unique[sub_categories.name,id,{sub_category_id}]',
@@ -513,7 +514,7 @@ class AdminController extends BaseController
                         'parent_cat' => $request->getVar('parent_cat'),
                         'description' => $request->getVar('sub_category_description')
                     ])->update();
-                    $msg = 'Sub category edited';
+                $msg = 'Sub category edited';
             } else {
                 $save = $subcategory->save([
                     'name' => $request->getVar('sub_category_name'),
@@ -547,23 +548,24 @@ class AdminController extends BaseController
             case 1:
                 $order = 'sub_categories.name';
                 break;
-                case 2:
-                    $order = 'categories.name';
-                    break;
+            case 2:
+                $order = 'categories.name';
+                break;
         }
 
         $subcategory = new SubCategory();
         $subcategory_length = $subcategory->countAllResults();
         if ($search != '') {
-            $subcategory_data = $subcategory->select('sub_categories.id,sub_categories.name as sbname,categories.name')->orLike(['sub_categories.name' => $search,'categories.name' => $search, 'sub_categories.id' => $search])->join('categories', 'categories.id=sub_categories.parent_cat','left')->asArray()->orderBy($order, $orderDir)->findAll($length, $start);
+            $subcategory_data = $subcategory->select('sub_categories.id,sub_categories.name as sbname,categories.name')->orLike(['sub_categories.name' => $search, 'categories.name' => $search, 'sub_categories.id' => $search])->join('categories', 'categories.id=sub_categories.parent_cat', 'left')->asArray()->orderBy($order, $orderDir)->findAll($length, $start);
             $subcategory_filtered = count($subcategory_data);
         } else {
-            $subcategory_data = $subcategory->select('sub_categories.id,sub_categories.name as sbname,categories.name')->asArray()->orderBy($order, $orderDir)->join('categories', 'categories.id=sub_categories.parent_cat','left')->findAll($length, $start);
+            $subcategory_data = $subcategory->select('sub_categories.id,sub_categories.name as sbname,categories.name')->asArray()->orderBy($order, $orderDir)->join('categories', 'categories.id=sub_categories.parent_cat', 'left')->findAll($length, $start);
             $subcategory_filtered = $subcategory_length;
         }
         return $this->response->setJSON([
             "recordsTotal" => $subcategory_length,
-            "recordsFiltered" => $subcategory_filtered, 'data' => $subcategory_data
+            "recordsFiltered" => $subcategory_filtered,
+            'data' => $subcategory_data
         ]);
     }
 
@@ -585,5 +587,15 @@ class AdminController extends BaseController
         } else {
             return $this->response->setJSON(['status' => 0, 'msg' => 'Gagal Hapus Data']);
         }
+    }
+
+    public function addPost()
+    {
+        $categories = new Category();
+        $data = [
+            'pageTitle' => 'New Post',
+            'categories' => $categories->asObject()->findAll()
+        ];
+        return view('backend/pages/new-post', $data);
     }
 }

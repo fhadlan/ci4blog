@@ -30,7 +30,7 @@
 					</a>
 					<ul class="submenu">
 						<li><a href="">All Posts</a></li>
-						<li><a href="">Post</a></li>
+						<li><a href="<?= route_to('new-post') ?>">Make Post</a></li>
 					</ul>
 				</li>
 				<li>
