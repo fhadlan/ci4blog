@@ -73,11 +73,11 @@
                         <span class="text-danger error-text image_error"></span>
                     </div>
                     <div class="d-block-mb-3" style="max-width: 250px">
-                        <img id="preview_image" src="" alt="" class="img-thumbnail">
+                        <img id="preview_image" src="" alt="img-thumbnail" class="img-thumbnail">
                     </div>
                     <div class="form-group">
                         <label for="tags">Tags</label>
-                        <input type="text" name="tags" class="form-control" placeholder="Enter tags">
+                        <input type="text" name="tags" class="form-control" placeholder="Enter tags" data-role="tagsinput">
                         <span class="text-danger error-text tags_error"></span>
                     </div>
                     <div class="form-group">
@@ -99,4 +99,29 @@
         <button type="submit" class="btn btn-primary mt-3">Save Post</button>
     </div>
 </form>
+<?php $this->endSection() ?>
+
+<?php $this->section('stylesheets') ?>
+<link rel="stylesheet" href="/backend/src/plugins/bootstrap-tagsinput/bootstrap-tagsinput.css">
+<?php $this->endSection() ?>
+
+<?php $this->section('scripts') ?>
+<script src="/backend/src/plugins/bootstrap-tagsinput/bootstrap-tagsinput.js"></script>
+<script>
+    // Function to read an image file and display it in the img tag
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                $('#preview_image').attr('src', e.target.result);
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    // Trigger the readURL function when the image input changes
+    $('#image').on('change', function() {
+        readURL(this);
+    })
+</script>
 <?php $this->endSection() ?>

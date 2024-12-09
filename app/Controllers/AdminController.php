@@ -150,7 +150,7 @@ class AdminController extends BaseController
             return json_encode(['status' => 0, 'error' => $errors]);
             // return $this->response->setJSON(['status' => 0, 'error' => $errors]);
         } else {
-            //update databse
+            //update database
             $user->where('id', $user_id)
                 ->set(['password' => Hash::make($request->getVar('new_password'))])
                 ->update();
