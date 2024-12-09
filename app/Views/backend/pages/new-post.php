@@ -92,6 +92,11 @@
                         </div>
                     </div>
                 </div>
-
+            </div>
+        </div>
+    </div>
+    <div class="mb-3">
+        <button type="submit" class="btn btn-primary mt-3">Save Post</button>
+    </div>
 </form>
 <?php $this->endSection() ?>
