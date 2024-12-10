@@ -17,6 +17,7 @@ class Post extends Model
         'content',
         'meta_keywords',
         'meta_description',
-        'visibility'
+        'visibility',
+        'tags'
     ];
 }

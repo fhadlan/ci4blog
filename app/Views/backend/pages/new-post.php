@@ -124,6 +124,7 @@
         readURL(this);
     })
 
+    // Fungsi untuk mengirimkan form melalui AJAX
     $('#post_form').on('submit', function(e) {
         e.preventDefault();
         var form = this;
@@ -138,17 +139,22 @@
             contentType: false,
             cache: false,
             beforeSend: function() {
+                // Hapus pesan error sebelum mengirimkan form
                 $(form).find('span.error-text').text('');
             },
             success: function(response) {
+                // Jika tidak ada error, maka tampilkan pesan sukses
                 if ($.isEmptyObject(response.error)) {
                     if (response.status == 1) {
                         alert(response.msg);
                         $(form)[0].reset();
+                        $('#preview_image').attr('src', '');
+                        $('#tags').tagsinput('removeAll');
                     } else {
                         alert(response.msg);
                     }
                 } else {
+                    // Jika ada error, maka tampilkan pesan error
                     $.each(response.error, function(prefix, val) {
                         $('span.' + prefix + '_error').text(val);
                     });

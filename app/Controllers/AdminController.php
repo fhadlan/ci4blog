@@ -604,7 +604,6 @@ class AdminController extends BaseController
     {
         $request = \Config\Services::request();
         $validation =  \Config\Services::validation();
-
         if ($this->request->isAJAX()) {
             $this->validate([
                 'title' => [
@@ -636,6 +635,60 @@ class AdminController extends BaseController
                     ]
                 ]
             ]);
+        }
+
+        if ($validation->run() == FALSE) {
+            $error = $validation->getErrors();
+            return $this->response->setJSON(['status' => 0, 'error' => $error]);
+        } else {
+            //return $this->response->setJSON(['status' => 1, 'msg' => 'success']);
+            $user_id = CIAuth::id();
+            $path = 'images/posts/';
+            $file = $request->getFile('image');
+            $filename = $file->getFilename();
+
+            if (!is_dir($path)) {
+                mkdir($path, 0777, true);
+            }
+
+            if ($file->move($path, $filename)) {
+                //create thumbail img
+                \Config\Services::image()
+                    ->withFile($path . $filename)
+                    ->fit(150, 150, 'center')
+                    ->save($path . 'thumb_' . $filename);
+
+                //create resized image 450x300
+                \Config\Services::image()
+                    ->withFile($path . $filename)
+                    ->fit(450, 300, 'center')
+                    ->save($path . 'resized_' . $filename);
+
+                $post = new Post();
+                $data = [
+                    'title' => $this->request->getVar('title'),
+                    'content' => $this->request->getVar('content'),
+                    'meta_keywords' => $this->request->getVar('meta_keywords'),
+                    'meta_description' => $this->request->getVar('meta_description'),
+                    'category_id' => $this->request->getVar('category'),
+                    'image' => $filename,
+                    'author_id' => $user_id,
+                    'visibility' => $this->request->getVar('visibility'),
+                    'slug' => Slugify::model(Post::class)->make($this->request->getVar('title')),
+                    'tags' => $this->request->getVar('tags')
+                ];
+                $save = $post->insert($data);
+                $last_id = $post->getInsertID();
+
+                if ($save) {
+                    return $this->response->setJSON(['status' => 1, 'msg' => 'success']);
+                } else {
+                    return $this->response->setJSON(['status' => 0, 'msg' => 'something went wrong']);
+                }
+            } else {
+                //return error
+                return $this->response->setJSON(['status' => 0, 'msg' => 'something went wrong']);
+            }
         }
     }
 }
