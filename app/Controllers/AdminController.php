@@ -600,5 +600,42 @@ class AdminController extends BaseController
         return view('backend/pages/new-post', $data);
     }
 
-    public function createPost() {}
+    public function createPost()
+    {
+        $request = \Config\Services::request();
+        $validation =  \Config\Services::validation();
+
+        if ($this->request->isAJAX()) {
+            $this->validate([
+                'title' => [
+                    'rules' => 'required|is_unique[posts.title]',
+                    'errors' => [
+                        'required' => 'Title is required',
+                        'is_unique' => 'Title already exist'
+                    ]
+                ],
+                'content' => [
+                    'rules' => 'required|min_length[20]',
+                    'errors' => [
+                        'required' => 'Content is required',
+                        'min_length' => 'Content must be at least 20 characters long'
+                    ]
+                ],
+                'category' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'Category is required'
+                    ]
+                ],
+                'image' => [
+                    'rules' => 'uploaded[image]|max_size[image,2048]|is_image[image]',
+                    'errors' => [
+                        'uploaded' => 'Please select an image',
+                        'max_size' => 'Image size should not exceed 2 MB',
+                        'is_image' => 'Please select a valid image file'
+                    ]
+                ]
+            ]);
+        }
+    }
 }
