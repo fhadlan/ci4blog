@@ -23,7 +23,7 @@
     </div>
 </div>
 
-<form action="<?= route_to('create-post') ?>" method="post" enctype="multipart/form-data" autocomplete="off">
+<form action="<?= route_to('create-post') ?>" method="post" enctype="multipart/form-data" autocomplete="off" id="post_form">
     <?= csrf_field() ?>
     <div class="row">
         <div class="col-md-9">
@@ -122,6 +122,39 @@
     // Trigger the readURL function when the image input changes
     $('#image').on('change', function() {
         readURL(this);
+    })
+
+    $('#post_form').on('submit', function(e) {
+        e.preventDefault();
+        var form = this;
+        var formData = new FormData(form);
+
+        $.ajax({
+            url: $(form).attr('action'),
+            method: $(form).attr('method'),
+            data: formData,
+            processData: false,
+            dataType: 'json',
+            contentType: false,
+            cache: false,
+            beforeSend: function() {
+                $(form).find('span.error-text').text('');
+            },
+            success: function(response) {
+                if ($.isEmptyObject(response.error)) {
+                    if (response.status == 1) {
+                        alert(response.msg);
+                        $(form)[0].reset();
+                    } else {
+                        alert(response.msg);
+                    }
+                } else {
+                    $.each(response.error, function(prefix, val) {
+                        $('span.' + prefix + '_error').text(val);
+                    });
+                }
+            }
+        });
     })
 </script>
 <?php $this->endSection() ?>

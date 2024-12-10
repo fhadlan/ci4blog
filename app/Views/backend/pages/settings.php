@@ -260,7 +260,6 @@
                     $(form).find('span.error-text').text('');
                 },
                 success: function(response) {
-
                     if (response.status == 1) {
                         alert(response.msg);
                         $(form)[0].reset();
@@ -322,7 +321,7 @@
         var formData = new FormData(form);
 
         $.ajax({
-            
+
             url: $(form).attr('action'),
             method: $(form).attr('method'),
             data: formData,

@@ -10,6 +10,7 @@ use App\Models\Setting;
 use App\Models\SocialMedia;
 use App\Models\Category;
 use App\Models\SubCategory;
+use App\Models\Post;
 use Config\Services;
 use Mberecall\CodeIgniter\Library\Slugify;
 
