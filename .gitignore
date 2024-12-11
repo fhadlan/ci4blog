@@ -127,3 +127,4 @@ nb-configuration.xml
 
 # generate gitignore
 *.env
+/public/images/posts/

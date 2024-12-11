@@ -40,10 +40,6 @@ class CreatePostsTable extends Migration
                 'type' => 'INT',
                 'constraint' => 11
             ],
-            'sub_category_id' => [
-                'type' => 'INT',
-                'constraint' => 11
-            ],
             'title' => [
                 'type' => 'VARCHAR',
                 'constraint' => 255
