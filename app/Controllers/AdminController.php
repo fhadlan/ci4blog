@@ -700,4 +700,36 @@ class AdminController extends BaseController
         ];
         return view('backend/pages/posts', $data);
     }
+
+    public function getPosts()
+    {
+        $request = \Config\Services::request();
+        //print_r($request->getGet());
+        $length = $request->getGet('length');
+        $start = $request->getGet('start');
+        $search = $request->getGet('search')['value'];
+        $orderDir = $request->getGet('order')[0]['dir'];
+        $order = $request->getGet('order')[0]['column'];
+        switch ($order) {
+            case 0:
+                $order = 'id';
+                break;
+            case 1:
+                $order = 'title';
+                break;
+        }
+
+        $posts = new Post();
+        $post_length = $posts->countAllResults();
+        $posts_filtered = $post_length;
+        if ($search != '') {
+            $posts_data = $posts->select('posts.id, title, image, categories.name as category, visibility')->join('categories', 'categories.id=posts.category_id', 'left')->orLike(['title' => $search, 'id' => $search])->asArray()->orderBy($order, $orderDir)->findAll($length, $start);
+            $posts_filtered = count($posts_data);
+        } else {
+            $posts_data = $posts->select('posts.id, title, image, categories.name as category, visibility')->join('categories', 'categories.id=posts.category_id', 'left')->asArray()->orderBy($order, $orderDir)->findAll($length, $start);
+            $posts_filtered = $post_length;
+        }
+        //print_r($posts_data);
+        return $this->response->setJSON(['data' => $posts_data, 'recordsTotal' => $post_length, 'recordsFiltered' => $posts_filtered]);
+    }
 }
