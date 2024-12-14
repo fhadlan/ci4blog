@@ -70,6 +70,50 @@
 <script src="/backend/src/plugins/datatables/js/responsive.bootstrap4.min.js"></script>
 
 <script>
+    let table = $('#posts_table').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: '<?= route_to('get-posts') ?>',
+            type: 'POST'
+        },
+        columns: [{
+                data: 'id',
+                name: 'id',
+                class: 'text-center'
+            },
+            {
+                data: 'image',
+                name: 'image',
+                class: 'text-center',
+                orderable: false
+            },
+            {
+                data: 'title',
+                name: 'title',
+                class: 'text-center'
+            },
+            {
+                data: 'category',
+                name: 'category',
+                class: 'text-center'
+            },
+            {
+                data: 'visibility',
+                name: 'visibility',
+                class: 'text-center'
+            },
+            {
+                data: 'action',
+                name: 'action',
+                class: 'text-center',
+                orderable: false
+            },
+        ]
+    })
 
+    $(document).ready(function() {
+        table
+    })
 </script>
 <?php $this->endSection() ?>
