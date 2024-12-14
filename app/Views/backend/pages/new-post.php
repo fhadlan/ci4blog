@@ -18,7 +18,7 @@
             </nav>
         </div>
         <div class="col-md-6 col-sm-12 text-right">
-            <a href="" class="btn btn-primary">View All Posts</a>
+            <a href="<?= route_to('all-posts') ?>" class="btn btn-primary">View All Posts</a>
         </div>
     </div>
 </div>

@@ -691,4 +691,13 @@ class AdminController extends BaseController
             }
         }
     }
+
+    public function posts()
+    {
+        $data = [
+            'pageTitle' => 'Posts'
+
+        ];
+        return view('backend/pages/posts', $data);
+    }
 }

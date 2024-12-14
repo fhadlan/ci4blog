@@ -43,6 +43,8 @@ $routes->group('admin', static function ($routes) {
         $routes->group('posts', static function ($routes) {
             $routes->get('new-post', 'AdminController::addPost', ['as' => 'new-post']);
             $routes->post('create-post', 'AdminController::createPost', ['as' => 'create-post']);
+            $routes->get('/', 'AdminController::posts', ['as' => 'all-posts']);
+            $routes->get('get-posts', 'AdminController::getPosts', ['as' => 'get-posts']);
         });
     });
 

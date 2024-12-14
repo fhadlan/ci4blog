@@ -1,6 +1,6 @@
 <div class="left-side-bar">
 	<div class="brand-logo">
-		<a href="<?= route_to('admin.home')?>">
+		<a href="<?= route_to('admin.home') ?>">
 			<img src="/images/blog/<?= get_settings()->blog_logo ?>" alt="" class="dark-logo" style="max-height: 60px;" />
 			<img src="/images/blog/<?= get_settings()->blog_logo ?>" alt="" class="light-logo" style="max-height: 60px;" />
 		</a>
@@ -29,7 +29,7 @@
 						<span class="mtext"> Posts </span>
 					</a>
 					<ul class="submenu">
-						<li><a href="">All Posts</a></li>
+						<li><a href="<?= route_to('all-posts') ?>">All Posts</a></li>
 						<li><a href="<?= route_to('new-post') ?>">Make Post</a></li>
 					</ul>
 				</li>
