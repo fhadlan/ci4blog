@@ -732,4 +732,16 @@ class AdminController extends BaseController
         //print_r($posts_data);
         return $this->response->setJSON(['data' => $posts_data, 'recordsTotal' => $post_length, 'recordsFiltered' => $posts_filtered]);
     }
+
+    public function editPost($id)
+    {
+        $post = new Post();
+        $category = new Category();
+        $data = [
+            'pageTitle' => 'Edit Post',
+            'post' => $post->where('id', $id)->first(),
+            'categories' => $category->asObject()->findAll()
+        ];
+        return view('backend/pages/edit-post', $data);
+    }
 }

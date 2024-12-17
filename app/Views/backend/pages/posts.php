@@ -85,7 +85,7 @@
                 data: 'image',
                 orderable: false,
                 "render": function(data) {
-                    return `<img src="/images/posts/thumb_${data}" alt="error">`;
+                    return `<img src="/images/posts/thumb_${data}" class="img-thumbnail" alt="error">`;
                 },
             },
             {
@@ -96,10 +96,24 @@
             },
             {
                 data: 'visibility',
-
+                "render": function(data) {
+                    if (data == 1) {
+                        return `<span class="badge badge-success">Public</span>`;
+                    } else {
+                        return `<span class="badge badge-danger">Private</span>`;
+                    }
+                },
             },
             {
                 data: 'id',
+                "render": function(data) {
+                    let id = data;
+                    let linkup = `<?= route_to('edit-post', 'id') ?>`.replace("id", id);
+                    let linkdel = `<?= route_to('delete-post', 'id') ?>`.replace("id", id);
+                    return `<a href="${linkup}" class="btn btn-danger btn-sm"  id="edit"><i class="bi bi-pencil"></i></a>
+                                    <a href="${linkdel}" class="btn btn-danger btn-sm" id="delete" "><i class="bi bi-trash"></i></a>`;
+                },
+                orderable: false
             },
         ]
     })

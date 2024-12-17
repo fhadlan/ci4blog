@@ -45,6 +45,9 @@ $routes->group('admin', static function ($routes) {
             $routes->post('create-post', 'AdminController::createPost', ['as' => 'create-post']);
             $routes->get('/', 'AdminController::posts', ['as' => 'all-posts']);
             $routes->get('get-posts', 'AdminController::getPosts', ['as' => 'get-posts']);
+            $routes->get('edit-post/(:any)', 'AdminController::editPost/$1', ['as' => 'edit-post']);
+            $routes->post('update-post', 'AdminController::updatePost', ['as' => 'update-post']);
+            $routes->get('delete-post/(:any)', 'AdminController::deletePost/$1', ['as' => 'delete-post']);
         });
     });
 
