@@ -677,6 +677,7 @@ class AdminController extends BaseController
                     'slug' => Slugify::model(Post::class)->make($this->request->getVar('title')),
                     'tags' => $this->request->getVar('tags')
                 ];
+
                 $save = $post->insert($data);
                 $last_id = $post->getInsertID();
 
@@ -743,5 +744,104 @@ class AdminController extends BaseController
             'categories' => $category->asObject()->findAll()
         ];
         return view('backend/pages/edit-post', $data);
+    }
+
+    public function updatePost()
+    {
+        $post = new Post();
+        $user_id = CIAuth::id();
+        $id = $this->request->getVar('id');
+        $request = \Config\Services::request();
+        $validation =  \Config\Services::validation();
+        if ($this->request->isAJAX()) {
+            $this->validate([
+                'title' => [
+                    'rules' => 'required|is_unique[posts.title]',
+                    'errors' => [
+                        'required' => 'Title is required',
+                        'is_unique' => 'Title already exist'
+                    ]
+                ],
+                'content' => [
+                    'rules' => 'required|min_length[20]',
+                    'errors' => [
+                        'required' => 'Content is required',
+                        'min_length' => 'Content must be at least 20 characters long'
+                    ]
+                ],
+                'category' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'Category is required'
+                    ]
+                ],
+                'image' => [
+                    'rules' => 'max_size[image,2048]|is_image[image]|is_unique[posts.image]',
+                    'errors' => [
+                        'max_size' => 'Image size should not exceed 2 MB',
+                        'is_image' => 'Please select a valid image file',
+                        'is_unique' => 'Image already exist'
+                    ]
+                ]
+            ]);
+        }
+
+        if ($validation->run() == FALSE) {
+            $error = $validation->getErrors();
+            return $this->response->setJSON(['status' => 0, 'error' => $error]);
+        } else {
+
+            $data = [
+                'title' => $this->request->getVar('title'),
+                'content' => $this->request->getVar('content'),
+                'meta_keywords' => $this->request->getVar('meta_keywords'),
+                'meta_description' => $this->request->getVar('meta_description'),
+                'category_id' => $this->request->getVar('category'),
+                'author_id' => $user_id,
+                'visibility' => $this->request->getVar('visibility'),
+                'slug' => Slugify::model(Post::class)->make($this->request->getVar('title')),
+                'tags' => $this->request->getVar('tags')
+            ];
+
+            if (isset($_FILES['image']['name']) && $_FILES['image']['name'] != '') {
+                $path = 'images/posts/';
+                $file = $request->getFile('image');
+                $filename = $file->getFilename();
+                $oldfile = $post->asObject()->find($id)->image;
+
+                if ($oldfile != null && file_exists($path . $oldfile)) {
+                    unlink($path . $oldfile);
+                    unlink($path . 'thumb_' . $oldfile);
+                    unlink($path . 'resized_' . $oldfile);
+                }
+
+                if (!is_dir($path)) {
+                    mkdir($path, 0777, true);
+                }
+
+                if ($file->move($path, $filename)) {
+                    //create thumbail img
+                    \Config\Services::image()
+                        ->withFile($path . $filename)
+                        ->fit(150, 150, 'center')
+                        ->save($path . 'thumb_' . $filename);
+
+                    //create resized image 450x300
+                    \Config\Services::image()
+                        ->withFile($path . $filename)
+                        ->fit(450, 300, 'center')
+                        ->save($path . 'resized_' . $filename);
+                }
+
+                $data['image'] = $filename;
+            }
+
+            $save = $post->update($id, $data);
+            if ($save) {
+                return $this->response->setJSON(['status' => 1, 'msg' => 'success']);
+            } else {
+                return $this->response->setJSON(['status' => 0, 'msg' => 'something went wrong']);
+            }
+        }
     }
 }
