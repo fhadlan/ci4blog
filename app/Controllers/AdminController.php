@@ -756,7 +756,7 @@ class AdminController extends BaseController
         if ($this->request->isAJAX()) {
             $this->validate([
                 'title' => [
-                    'rules' => 'required|is_unique[posts.title]',
+                    'rules' => 'required|is_unique[posts.title,id,' . $id . ']',
                     'errors' => [
                         'required' => 'Title is required',
                         'is_unique' => 'Title already exist'
