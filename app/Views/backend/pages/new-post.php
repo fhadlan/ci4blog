@@ -36,7 +36,7 @@
                     </div>
                     <div class="form-group">
                         <label for="content">Content</label>
-                        <textarea name="content" id="content" class="form-control" placeholder="Enter content"></textarea>
+                        <div name="content" id="content"></div>
                         <span class="text-danger error-text content_error"></span>
                     </div>
                 </div>
@@ -107,7 +107,17 @@
 
 <?php $this->section('scripts') ?>
 <script src="/backend/src/plugins/bootstrap-tagsinput/bootstrap-tagsinput.js"></script>
+<script src="/ckeditor/ckeditor.js"></script>
 <script>
+    function initializeEditor() {
+        CKEDITOR.replace('content', {
+            height: 300
+        });
+    }
+
+    $(document).ready(function() {
+        initializeEditor();
+    });
     // Function to read an image file and display it in the img tag
     function readURL(input) {
         if (input.files && input.files[0]) {
@@ -129,6 +139,7 @@
         e.preventDefault();
         var form = this;
         var formData = new FormData(form);
+        formData.append('content', CKEDITOR.instances.content.getData());
 
         $.ajax({
             url: $(form).attr('action'),
@@ -150,6 +161,7 @@
                         $(form)[0].reset();
                         $('#preview_image').attr('src', '');
                         $('#tags').tagsinput('removeAll');
+                        CKEDITOR.instances.content.setData('');
                     } else {
                         alert(response.msg);
                     }
