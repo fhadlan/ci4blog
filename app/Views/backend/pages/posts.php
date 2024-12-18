@@ -109,15 +109,33 @@
                 "render": function(data) {
                     let id = data;
                     let linkup = `<?= route_to('edit-post', 'id') ?>`.replace("id", id);
-                    let linkdel = `<?= route_to('delete-post', 'id') ?>`.replace("id", id);
                     return `<a href="${linkup}" class="btn btn-danger btn-sm"  id="edit"><i class="bi bi-pencil"></i></a>
-                                    <a href="${linkdel}" class="btn btn-danger btn-sm" id="delete" "><i class="bi bi-trash"></i></a>`;
+                                    <button class="btn btn-danger btn-sm" id="delete" onclick="deletePost(` + id + `)"><i class="bi bi-trash"></i></button>`;
                 },
                 orderable: false
             },
         ]
     })
 
+    function deletePost(id) {
+        let confirmDelete = confirm("Are you sure you want to delete this post?");
+        if (!confirmDelete) {
+            return;
+        }
+        $.ajax({
+            url: `<?= route_to('delete-post') ?>`,
+            type: 'POST',
+            data: {
+                id: id
+            },
+            success: function(res) {
+                if (res.status == 1) {
+                    alert(res.msg);
+                    table.ajax.reload();
+                }
+            }
+        })
+    }
     $(document).ready(function() {
         table
     })

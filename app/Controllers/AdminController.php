@@ -715,9 +715,17 @@ class AdminController extends BaseController
             case 0:
                 $order = 'id';
                 break;
-            case 1:
+            case 2:
                 $order = 'title';
                 break;
+            case 3:
+                $order = 'category_id';
+                break;
+            case 4:
+                $order = 'visibility';
+                break;
+            default:
+                $order = 'id';
         }
 
         $posts = new Post();
@@ -842,6 +850,26 @@ class AdminController extends BaseController
             } else {
                 return $this->response->setJSON(['status' => 0, 'msg' => 'something went wrong']);
             }
+        }
+    }
+
+
+    public function deletePost()
+    {
+        $id = $this->request->getVar('id');
+        $post = new Post();
+        $path = 'images/posts/';
+        $oldfile = $post->asObject()->find($id)->image;
+        if ($oldfile != null && file_exists($path . $oldfile)) {
+            unlink($path . $oldfile);
+            unlink($path . 'thumb_' . $oldfile);
+            unlink($path . 'resized_' . $oldfile);
+        }
+        $delete = $post->delete($id);
+        if ($delete) {
+            return $this->response->setJSON(['status' => 1, 'msg' => 'success']);
+        } else {
+            return $this->response->setJSON(['status' => 0, 'msg' => 'something went wrong']);
         }
     }
 }
