@@ -1,3 +1,7 @@
+<?php
+
+use App\Libraries\CIAuth; ?>
+
 <?php $this->extend('backend/layout/page-layout'); ?>
 <?php $this->section('content') ?>
 <div class="page-header">
@@ -110,8 +114,12 @@
 <script src="/ckeditor/ckeditor.js"></script>
 <script>
     function initializeEditor(data) {
+        let elfinderPath = "/elFinder/elfinder.html";
         CKEDITOR.replace('content', {
-            height: 300
+            height: 300,
+            filebrowserBrowseUrl: elfinderPath,
+            filebrowserImageBrowseUrl: elfinderPath + '?integration=ckeditor&uid=<?= CIAuth::id() ?>&type=image',
+            removeDialogsTabs: "link:upload;image:upload"
         });
         CKEDITOR.instances.content.setData(data);
     }

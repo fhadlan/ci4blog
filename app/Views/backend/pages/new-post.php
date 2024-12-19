@@ -114,11 +114,11 @@ $this->extend('backend/layout/page-layout'); ?>
 <script src="/ckeditor/ckeditor.js"></script>
 <script>
     function initializeEditor() {
-        let elfinderPath = "/elFinder/elfinder.html?integration=ckeditor&uid=<?= CIAuth::id() ?>";
+        let elfinderPath = "/elFinder/elfinder.html";
         CKEDITOR.replace('content', {
             height: 300,
             filebrowserBrowseUrl: elfinderPath,
-            filebrowserImageBrowseUrl: elfinderPath + '?type=image',
+            filebrowserImageBrowseUrl: elfinderPath + '?integration=ckeditor&uid=<?= CIAuth::id() ?>&type=image',
             removeDialogsTabs: "link:upload;image:upload"
 
         });
