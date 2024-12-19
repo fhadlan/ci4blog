@@ -20,8 +20,7 @@
 	<link rel="stylesheet" type="text/css" href="/backend/vendors/styles/core.css" />
 	<link rel="stylesheet" type="text/css" href="/backend/vendors/styles/icon-font.min.css" />
 	<link rel="stylesheet" type="text/css" href="/backend/vendors/styles/style.css" />
-	<link rel="stylesheet" type="text/css" href="/backend/vendors/styles/ijaboCropTool.min.css" />
-
+	<?php $this->renderSection('stylesheets'); ?>
 
 	<!-- Global site tag (gtag.js) - Google Analytics -->
 	<script async src="https://www.googletagmanager.com/gtag/js?id=G-GBZ3SGGX85"></script>
@@ -95,7 +94,6 @@
 	<script src="/backend/vendors/scripts/script.min.js"></script>
 	<script src="/backend/vendors/scripts/process.js"></script>
 	<script src="/backend/vendors/scripts/layout-settings.js"></script>
-	<script src="/backend/vendors/scripts/ijaboCropTool.min.js"></script>
 	<?php $this->renderSection('scripts') ?>
 </body>
 

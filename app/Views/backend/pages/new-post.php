@@ -1,4 +1,8 @@
-<?php $this->extend('backend/layout/page-layout'); ?>
+<?php
+
+use App\Libraries\CIAuth;
+
+$this->extend('backend/layout/page-layout'); ?>
 <?php $this->section('content') ?>
 <div class="page-header">
     <div class="row">
@@ -101,17 +105,22 @@
 </form>
 <?php $this->endSection() ?>
 
-<?php $this->section('stylesheets') ?>
-<link rel="stylesheet" href="/backend/src/plugins/bootstrap-tagsinput/bootstrap-tagsinput.css">
-<?php $this->endSection() ?>
+<?= $this->section('stylesheets') ?>
+<link rel="stylesheet" type="text/css" href="/backend/src/plugins/bootstrap-tagsinput/bootstrap-tagsinput.css">
+<?= $this->endSection() ?>
 
 <?php $this->section('scripts') ?>
 <script src="/backend/src/plugins/bootstrap-tagsinput/bootstrap-tagsinput.js"></script>
 <script src="/ckeditor/ckeditor.js"></script>
 <script>
     function initializeEditor() {
+        let elfinderPath = "/elFinder/elfinder.html?integration=ckeditor&uid=<?= CIAuth::id() ?>";
         CKEDITOR.replace('content', {
-            height: 300
+            height: 300,
+            filebrowserBrowseUrl: elfinderPath,
+            filebrowserImageBrowseUrl: elfinderPath + '?type=image',
+            removeDialogsTabs: "link:upload;image:upload"
+
         });
     }
 

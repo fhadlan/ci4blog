@@ -36,7 +36,7 @@
                 </div>
             </div>
             <div class="card-body">
-                <table class="data-table table stripe hover noWrap dataTable no-footer dtr-inline collapsed" id="posts_table">
+                <table class="data-table table stripe hover noWrap dataTable no-footer dtr-inline " id="posts_table">
                     <thead>
                         <tr>
                             <th class="text-center" scope="col">ID</th>
@@ -79,7 +79,6 @@
         },
         columns: [{
                 data: 'id',
-
             },
             {
                 data: 'image',

@@ -102,7 +102,7 @@
 <?php $this->endSection() ?>
 
 <?php $this->section('stylesheets') ?>
-<link rel="stylesheet" href="/backend/src/plugins/bootstrap-tagsinput/bootstrap-tagsinput.css">
+<link rel="stylesheet" type="text/css" href="/backend/src/plugins/bootstrap-tagsinput/bootstrap-tagsinput.css">
 <?php $this->endSection() ?>
 
 <?php $this->section('scripts') ?>
