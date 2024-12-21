@@ -451,11 +451,16 @@ class AdminController extends BaseController
     public function deleteCategory($id)
     {
         $category = new Category();
-        $delete = $category->delete(['id' => $id]);
-        if ($delete) {
-            return $this->response->setJSON(['status' => 1, 'msg' => 'Data Dihapus']);
+        $subcategory = new SubCategory();
+        if ($subcategory->where('parent_cat', $id)->countAllResults() > 0) {
+            return $this->response->setJSON(['status' => 0, 'msg' => 'Gagal Menghapus Data, Category Tidak Kosong']);
         } else {
-            return $this->response->setJSON(['status' => 0, 'msg' => 'Gagal Hapus Data']);
+            $delete = $category->delete(['id' => $id]);
+            if ($delete) {
+                return $this->response->setJSON(['status' => 1, 'msg' => 'Data Dihapus']);
+            } else {
+                return $this->response->setJSON(['status' => 0, 'msg' => 'Gagal Hapus Data']);
+            }
         }
     }
 
@@ -552,15 +557,18 @@ class AdminController extends BaseController
             case 2:
                 $order = 'categories.name';
                 break;
+            case 3:
+                $order = 'posts';
+                break;
         }
 
         $subcategory = new SubCategory();
         $subcategory_length = $subcategory->countAllResults();
         if ($search != '') {
-            $subcategory_data = $subcategory->select('sub_categories.id,sub_categories.name as sbname,categories.name')->orLike(['sub_categories.name' => $search, 'categories.name' => $search, 'sub_categories.id' => $search])->join('categories', 'categories.id=sub_categories.parent_cat', 'left')->asArray()->orderBy($order, $orderDir)->findAll($length, $start);
+            $subcategory_data = $subcategory->select('sub_categories.id,sub_categories.name as sbname,categories.name, count(posts.category_id) as posts')->orLike(['sub_categories.name' => $search, 'categories.name' => $search, 'sub_categories.id' => $search])->join('categories', 'categories.id=sub_categories.parent_cat', 'right')->join('posts', 'posts.category_id=sub_categories.id', 'left')->groupBy('sub_categories.id')->asArray()->orderBy($order, $orderDir)->findAll($length, $start);
             $subcategory_filtered = count($subcategory_data);
         } else {
-            $subcategory_data = $subcategory->select('sub_categories.id,sub_categories.name as sbname,categories.name')->asArray()->orderBy($order, $orderDir)->join('categories', 'categories.id=sub_categories.parent_cat', 'left')->findAll($length, $start);
+            $subcategory_data = $subcategory->select('sub_categories.id,sub_categories.name as sbname,categories.name,count(posts.category_id) as posts')->asArray()->orderBy($order, $orderDir)->join('categories', 'categories.id=sub_categories.parent_cat', 'left')->join('posts', 'posts.category_id=sub_categories.id', 'left')->groupBy('sub_categories.id')->findAll($length, $start);
             $subcategory_filtered = $subcategory_length;
         }
         return $this->response->setJSON([
@@ -581,21 +589,26 @@ class AdminController extends BaseController
     public function deleteSubCategory()
     {
         $id = $this->request->getVar('id');
-        $subcategory = new SubCategory();
-        $delete = $subcategory->delete(['id' => $id]);
-        if ($delete) {
-            return $this->response->setJSON(['status' => 1, 'msg' => 'Data Dihapus']);
+        $post = new Post();
+        if ($post->where('category_id', $id)->countAllResults() > 0) {
+            return $this->response->setJSON(['status' => 0, 'msg' => 'Tidak bisa dihapus karena ada post dengan kategori ini']);
         } else {
-            return $this->response->setJSON(['status' => 0, 'msg' => 'Gagal Hapus Data']);
+            $subcategory = new SubCategory();
+            $delete = $subcategory->delete(['id' => $id]);
+            if ($delete) {
+                return $this->response->setJSON(['status' => 1, 'msg' => 'Data Dihapus']);
+            } else {
+                return $this->response->setJSON(['status' => 0, 'msg' => 'Gagal Hapus Data']);
+            }
         }
     }
 
     public function addPost()
     {
-        $categories = new Category();
+        $subcategories = new SubCategory();
         $data = [
             'pageTitle' => 'New Post',
-            'categories' => $categories->asObject()->findAll()
+            'categories' => $subcategories->asObject()->findAll()
         ];
         return view('backend/pages/new-post', $data);
     }
@@ -732,10 +745,10 @@ class AdminController extends BaseController
         $post_length = $posts->countAllResults();
         $posts_filtered = $post_length;
         if ($search != '') {
-            $posts_data = $posts->select('posts.id, title, image, categories.name as category, visibility')->join('categories', 'categories.id=posts.category_id', 'left')->orLike(['title' => $search, 'id' => $search])->asArray()->orderBy($order, $orderDir)->findAll($length, $start);
+            $posts_data = $posts->select('posts.id, title, image, sub_categories.name as category, visibility')->join('sub_categories', 'sub_categories.id=posts.category_id', 'left')->orLike(['title' => $search, 'id' => $search])->asArray()->orderBy($order, $orderDir)->findAll($length, $start);
             $posts_filtered = count($posts_data);
         } else {
-            $posts_data = $posts->select('posts.id, title, image, categories.name as category, visibility')->join('categories', 'categories.id=posts.category_id', 'left')->asArray()->orderBy($order, $orderDir)->findAll($length, $start);
+            $posts_data = $posts->select('posts.id, title, image, sub_categories.name as category, visibility')->join('sub_categories', 'sub_categories.id=posts.category_id', 'left')->asArray()->orderBy($order, $orderDir)->findAll($length, $start);
             $posts_filtered = $post_length;
         }
         //print_r($posts_data);
@@ -745,7 +758,7 @@ class AdminController extends BaseController
     public function editPost($id)
     {
         $post = new Post();
-        $category = new Category();
+        $category = new SubCategory();
         $data = [
             'pageTitle' => 'Edit Post',
             'post' => $post->where('id', $id)->first(),

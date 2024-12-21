@@ -76,7 +76,7 @@
                             <th scope="col">#</th>
                             <th scope="col">Name</th>
                             <th scope="col">Parent Category</th>
-                            <!--    <th scope="col">Posts</th> -->
+                            <th scope="col">Posts</th>
                             <th scope="col">Action</th>
                         </tr>
                     </thead>
@@ -151,6 +151,9 @@
                 data: 'name'
             },
             {
+                data: 'posts'
+            },
+            {
                 data: 'id',
                 "render": function(data) {
                     let id = data;
@@ -166,7 +169,7 @@
     })
 
 
-    function populateParentCat(){
+    function populateParentCat() {
         $.get("<?= route_to('get-parent-categories') ?>", function(response) {
             $('#parent_cat').html(response.data);
         })
@@ -197,12 +200,12 @@
     //fungsi hapus sub kategory (tombol delete)
     function deleteSubCategory(id) {
         if (confirm(`Hapus data id ` + id)) {
-            $.get("<?= route_to('delete-subcategory')?>", {
-            'id': id
-        }, function(response) {
-            alert(response.msg);
-            subdataTable.ajax.reload();
-        })
+            $.get("<?= route_to('delete-subcategory') ?>", {
+                'id': id
+            }, function(response) {
+                alert(response.msg);
+                subdataTable.ajax.reload();
+            })
         }
     }
     //fungsi ketika modal category diclose
@@ -274,9 +277,9 @@
         })
     }
 
-    function editSubCategory(id){
+    function editSubCategory(id) {
         event.preventDefault();
-        
+
         $('#sub_category_modal').find('.modal-title').html('Edit Data Sub Category');
         $('#sub_category_modal').find('#btnSubmit').text('Edit');
         url = "<?= route_to('get-sub-category-edit') ?>";
