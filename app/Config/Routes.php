@@ -5,7 +5,7 @@ use CodeIgniter\Router\RouteCollection;
 /**
  * @var RouteCollection $routes
  */
-$routes->get('/', 'Home::index');
+$routes->get('/', 'BlogController::index');
 
 $routes->group('admin', static function ($routes) {
     // All the routes below are for the authenticated user
