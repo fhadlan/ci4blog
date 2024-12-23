@@ -76,3 +76,34 @@ if (!function_exists('current_route_name')) {
         return $route_name;
     }
 }
+
+/**
+ * FRONTEND FUNCTIONS
+ */
+
+if (!function_exists('get_parent_categories')) {
+    function get_parent_categories()
+    {
+        $category = new \App\Models\Category();
+        $parent_categories = $category->asObject()->orderBy('name', 'asc')->findAll();
+        return $parent_categories;
+    }
+}
+
+if (!function_exists('get_sub_categories')) {
+    function get_sub_categories($parent_id)
+    {
+        $subcategory = new \App\Models\SubCategory();
+        $sub_categories = $subcategory->asObject()->where('parent_cat', $parent_id)->orderBy('name', 'asc')->findAll();
+        return $sub_categories;
+    }
+}
+
+if (!function_exists('get_dependant_sub_categories')) {
+    function get_dependant_sub_categories()
+    {
+        $subcategory = new \App\Models\SubCategory();
+        $sub_categories = $subcategory->asObject()->where('parent_cat =', 0)->orderBy('name', 'asc')->findAll();
+        return $sub_categories;
+    }
+}
