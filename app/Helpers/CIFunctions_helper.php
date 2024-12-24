@@ -143,3 +143,21 @@ if (!function_exists('limit_words')) {
         return word_limiter($content, $limit);
     }
 }
+
+if (!function_exists('get_home_main_latest_posts')) {
+    function get_home_main_latest_posts()
+    {
+        $post = new Post();
+        $latest_posts = $post->asObject()->where('visibility', 1)->orderBy('created_at', 'desc')->first();
+        return $latest_posts;
+    }
+}
+
+if (!function_exists('get_6_home_latest_posts')) {
+    function get_6_home_latest_posts()
+    {
+        $post = new Post();
+        $latest_posts = $post->asObject()->where('visibility', 1)->orderBy('created_at', 'desc')->limit(6, 1)->get()->getResult();
+        return $latest_posts;
+    }
+}

@@ -25,169 +25,46 @@
         <div class="row">
             <div class="col-12 mb-4">
                 <article class="card article-card">
-                    <a href="article.html">
+                    <a href="<?= route_to('read-post', get_home_main_latest_posts()->slug) ?>">
                         <div class="card-image">
-                            <div class="post-info"> <span class="text-uppercase">04 Jun 2021</span>
-                                <span class="text-uppercase">3 minutes read</span>
+                            <div class="post-info"> <span class="text-uppercase"><?= date_formatter(get_home_main_latest_posts()->created_at) ?></span>
+                                <span class="text-uppercase"><?= get_reading_time(get_home_main_latest_posts()->content) ?></span>
                             </div>
-                            <img loading="lazy" decoding="async" src="/frontend/images/post/post-1.jpg" alt="Post Thumbnail" class="w-100">
+                            <img loading="lazy" decoding="async" src="/images/posts/resized_<?= get_home_main_latest_posts()->image ?>" alt="Post Thumbnail" class="w-100">
                         </div>
                     </a>
                     <div class="card-body px-0 pb-1">
-                        <ul class="post-meta mb-2">
-                            <li> <a href="#!">travel</a>
-                                <a href="#!">news</a>
-                            </li>
-                        </ul>
-                        <h2 class="h1"><a class="post-title" href="article.html">Is it Ethical to Travel Now?
-                                With that Freedom Comes Responsibility.</a></h2>
-                        <p class="card-text">Heading Here is example of hedings. You can use this heading by following markdownify rules. For example: use # for heading 1 and use ###### for heading 6.</p>
-                        <div class="content"> <a class="read-more-btn" href="article.html">Read Full Article</a>
+                        <h2 class="h1"><a class="post-title" href="<?= route_to('read-post', get_home_main_latest_posts()->slug) ?>"><?= get_home_main_latest_posts()->title ?></a></h2>
+                        <p class="card-text"><?= limit_words(get_home_main_latest_posts()->content, 20) ?></p>
+                        <div class="content"> <a class="read-more-btn" href="<?= route_to('read-post', get_home_main_latest_posts()->slug) ?>">Read Full Article</a>
                         </div>
                     </div>
                 </article>
             </div>
-            <div class="col-md-6 mb-4">
-                <article class="card article-card article-card-sm h-100">
-                    <a href="article.html">
-                        <div class="card-image">
-                            <div class="post-info"> <span class="text-uppercase">03 Jun 2021</span>
-                                <span class="text-uppercase">2 minutes read</span>
+
+            <?php if (count(get_6_home_latest_posts()) > 0): ?>
+                <?php foreach (get_6_home_latest_posts() as $post): ?>
+                    <div class="col-md-6 mb-4">
+                        <article class="card article-card article-card-sm h-100">
+                            <a href="<?= route_to('read-post', $post->slug) ?>">
+                                <div class="card-image">
+                                    <div class="post-info"> <span class="text-uppercase"><?= date_formatter($post->created_at) ?></span>
+                                        <span class="text-uppercase"><?= get_reading_time($post->content) ?></span>
+                                    </div>
+                                    <img loading="lazy" decoding="async" src="/images/posts/resized_<?= $post->image ?>" alt="Post Thumbnail" class="w-100">
+                                </div>
+                            </a>
+                            <div class="card-body px-0 pb-0">
+
+                                <h2><a class="post-title" href="<?= route_to('read-post', $post->slug) ?>"><?= $post->title ?></a></h2>
+                                <p class="card-text"><?= limit_words($post->content, 20) ?> …</p>
+                                <div class="content"> <a class="read-more-btn" href="<?= route_to('read-post', $post->slug) ?>">Read Full Article</a>
+                                </div>
                             </div>
-                            <img loading="lazy" decoding="async" src="/frontend/images/post/post-2.jpg" alt="Post Thumbnail" class="w-100">
-                        </div>
-                    </a>
-                    <div class="card-body px-0 pb-0">
-                        <ul class="post-meta mb-2">
-                            <li> <a href="#!">travel</a>
-                            </li>
-                        </ul>
-                        <h2><a class="post-title" href="article.html">An
-                                Experiential Guide to Explore This Kingdom</a></h2>
-                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna …</p>
-                        <div class="content"> <a class="read-more-btn" href="article.html">Read Full Article</a>
-                        </div>
+                        </article>
                     </div>
-                </article>
-            </div>
-            <div class="col-md-6 mb-4">
-                <article class="card article-card article-card-sm h-100">
-                    <a href="article.html">
-                        <div class="card-image">
-                            <div class="post-info"> <span class="text-uppercase">02 Jun 2021</span>
-                                <span class="text-uppercase">2 minutes read</span>
-                            </div>
-                            <img loading="lazy" decoding="async" src="/frontend/images/post/ls-2.jpg" alt="Post Thumbnail" class="w-100">
-                        </div>
-                    </a>
-                    <div class="card-body px-0 pb-0">
-                        <ul class="post-meta mb-2">
-                            <li> <a href="#!">lifestyle</a>
-                            </li>
-                        </ul>
-                        <h2><a class="post-title" href="article.html">What
-                                to Do in Houston: Ideas for Your Visit</a></h2>
-                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna …</p>
-                        <div class="content"> <a class="read-more-btn" href="article.html">Read Full Article</a>
-                        </div>
-                    </div>
-                </article>
-            </div>
-            <div class="col-md-6 mb-4">
-                <article class="card article-card article-card-sm h-100">
-                    <a href="article.html">
-                        <div class="card-image">
-                            <div class="post-info"> <span class="text-uppercase">01 Jun 2021</span>
-                                <span class="text-uppercase">3 minutes read</span>
-                            </div>
-                            <img loading="lazy" decoding="async" src="/frontend/images/post/cr-1.jpg" alt="Post Thumbnail" class="w-100">
-                        </div>
-                    </a>
-                    <div class="card-body px-0 pb-0">
-                        <ul class="post-meta mb-2">
-                            <li> <a href="#!">cruises</a>
-                                <a href="#!">news</a>
-                            </li>
-                        </ul>
-                        <h2><a class="post-title" href="article.html">Alaska
-                                Cruises Will Restart as Biden Signs New Tourism Law</a></h2>
-                        <p class="card-text">Heading Here is example of hedings. You can use this heading by following markdownify rules. For example: use # for …</p>
-                        <div class="content"> <a class="read-more-btn" href="article.html">Read Full Article</a>
-                        </div>
-                    </div>
-                </article>
-            </div>
-            <div class="col-md-6 mb-4">
-                <article class="card article-card article-card-sm h-100">
-                    <a href="article.html">
-                        <div class="card-image">
-                            <div class="post-info"> <span class="text-uppercase">30 May 2021</span>
-                                <span class="text-uppercase">3 minutes read</span>
-                            </div>
-                            <img loading="lazy" decoding="async" src="/frontend/images/post/cr-2.jpg" alt="Post Thumbnail" class="w-100">
-                        </div>
-                    </a>
-                    <div class="card-body px-0 pb-0">
-                        <ul class="post-meta mb-2">
-                            <li> <a href="#!">cruises</a>
-                                <a href="#!">news</a>
-                            </li>
-                        </ul>
-                        <h2><a class="post-title" href="article.html">U.S.
-                                Travel Association Calls on CDC to Remove Cruise Restrictions</a></h2>
-                        <p class="card-text">Heading Here is example of hedings. You can use this heading by following markdownify rules. For example: use # for …</p>
-                        <div class="content"> <a class="read-more-btn" href="article.html">Read Full Article</a>
-                        </div>
-                    </div>
-                </article>
-            </div>
-            <div class="col-md-6 mb-4">
-                <article class="card article-card article-card-sm h-100">
-                    <a href="article.html">
-                        <div class="card-image">
-                            <div class="post-info"> <span class="text-uppercase">29 May 2021</span>
-                                <span class="text-uppercase">3 minutes read</span>
-                            </div>
-                            <img loading="lazy" decoding="async" src="/frontend/images/post/post-4.jpg" alt="Post Thumbnail" class="w-100">
-                        </div>
-                    </a>
-                    <div class="card-body px-0 pb-0">
-                        <ul class="post-meta mb-2">
-                            <li> <a href="#!">destination</a>
-                            </li>
-                        </ul>
-                        <h2><a class="post-title" href="article.html">Top 7 Reasons to
-                                Visit Denver This Summer</a></h2>
-                        <p class="card-text">Heading Here is example of hedings. You can use this heading by following markdownify rules. For example: use # for …</p>
-                        <div class="content"> <a class="read-more-btn" href="article.html">Read Full Article</a>
-                        </div>
-                    </div>
-                </article>
-            </div>
-            <div class="col-md-6 mb-4">
-                <article class="card article-card article-card-sm h-100">
-                    <a href="article.html">
-                        <div class="card-image">
-                            <div class="post-info"> <span class="text-uppercase">28 May 2021</span>
-                                <span class="text-uppercase">2 minutes read</span>
-                            </div>
-                            <img loading="lazy" decoding="async" src="/frontend/images/post/post-8.jpg" alt="Post Thumbnail" class="w-100">
-                        </div>
-                    </a>
-                    <div class="card-body px-0 pb-0">
-                        <ul class="post-meta mb-2">
-                            <li> <a href="#!">news</a>
-                                <a href="#!">tips</a>
-                            </li>
-                        </ul>
-                        <h2><a class="post-title" href="article.html">An Experiential
-                                Guide to Explore This Kingdom</a></h2>
-                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna …</p>
-                        <div class="content"> <a class="read-more-btn" href="article.html">Read Full Article</a>
-                        </div>
-                    </div>
-                </article>
-            </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
             <div class="col-12">
                 <div class="row">
                     <div class="col-12">

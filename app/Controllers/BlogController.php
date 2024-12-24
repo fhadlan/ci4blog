@@ -8,7 +8,7 @@ use Faker\Extension\Helper;
 
 class BlogController extends BaseController
 {
-    protected $helpers = ['form', 'url', 'CIMail', 'CIFunctions'];
+    protected $helpers = ['form', 'url', 'CIMail', 'CIFunctions', 'text'];
     public function index()
     {
         $data = [
