@@ -14,7 +14,7 @@
     <title><?= isset($pageTitle) ? $pageTitle : 'New Page Title' ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
     <meta name="<?= csrf_token() ?>" content="<?= csrf_hash() ?>">
-    <?= $this->renderSection('mpage_eta') ?>
+    <?= $this->renderSection('page_meta') ?>
     <link rel="icon" href="/images/blog/<?= get_settings()->blog_favicon ?>" type="image/x-icon">
 
     <!-- theme meta -->

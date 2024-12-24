@@ -14,6 +14,14 @@ class BlogController extends BaseController
         $data = [
             'pageTitle' => get_settings()->blog_title
         ];
-        return view('frontend/example.php', $data);
+        return view('frontend/pages/home', $data);
+    }
+
+    public function readPost($slug)
+    {
+        $data = [
+            'pageTitle' => get_settings()->blog_title
+        ];
+        return view('frontend/pages/post', $data);
     }
 }

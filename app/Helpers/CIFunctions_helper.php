@@ -4,6 +4,8 @@ use App\Libraries\CIAuth;
 use App\Models\User;
 use App\Models\Setting;
 use App\Models\SocialMedia;
+use App\Models\Post;
+use Carbon\Carbon;
 
 if (!function_exists('get_user')) {
     function get_user()
@@ -81,6 +83,9 @@ if (!function_exists('current_route_name')) {
  * FRONTEND FUNCTIONS
  */
 
+/**
+ * Get parent categories
+ */
 if (!function_exists('get_parent_categories')) {
     function get_parent_categories()
     {
@@ -90,6 +95,9 @@ if (!function_exists('get_parent_categories')) {
     }
 }
 
+/**
+ * Get sub categories by parent id
+ */
 if (!function_exists('get_sub_categories')) {
     function get_sub_categories($parent_id)
     {
@@ -99,11 +107,39 @@ if (!function_exists('get_sub_categories')) {
     }
 }
 
+/**
+ * Get dependant sub categories
+ */
 if (!function_exists('get_dependant_sub_categories')) {
     function get_dependant_sub_categories()
     {
         $subcategory = new \App\Models\SubCategory();
         $sub_categories = $subcategory->asObject()->where('parent_cat =', 0)->orderBy('name', 'asc')->findAll();
         return $sub_categories;
+    }
+}
+
+/** Date format JAN 12, 2022 */
+if (!function_exists('date_formatter')) {
+    function date_formatter($date)
+    {
+        return Carbon::createFromFormat('Y-m-d H:i:s', $date)->isoFormat('ll');
+    }
+}
+
+/** calculate reading time */
+if (!function_exists('get_reading_time')) {
+    function get_reading_time($content)
+    {
+        $words = str_word_count(strip_tags($content));
+        $minutes = ceil($words / 200);
+        return $minutes;
+    }
+}
+
+if (!function_exists('limit_words')) {
+    function limit_words($content = null, $limit = 20)
+    {
+        return word_limiter($content, $limit);
     }
 }
