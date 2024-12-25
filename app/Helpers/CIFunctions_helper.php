@@ -140,7 +140,7 @@ if (!function_exists('get_reading_time')) {
 if (!function_exists('limit_words')) {
     function limit_words($content = null, $limit = 20)
     {
-        return word_limiter($content, $limit);
+        return word_limiter(strip_tags($content), $limit);
     }
 }
 
@@ -159,5 +159,14 @@ if (!function_exists('get_6_home_latest_posts')) {
         $post = new Post();
         $latest_posts = $post->asObject()->where('visibility', 1)->orderBy('created_at', 'desc')->limit(6, 1)->get()->getResult();
         return $latest_posts;
+    }
+}
+
+if (!function_exists('get_sidebar_random_posts')) {
+    function get_sidebar_random_posts()
+    {
+        $post = new Post();
+        $random_posts = $post->asObject()->where('visibility', 1)->orderBy('rand()')->limit(4)->get()->getResult();
+        return $random_posts;
     }
 }
