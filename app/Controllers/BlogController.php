@@ -6,6 +6,7 @@ use App\Controllers\BaseController;
 use App\Models\SubCategory;
 use App\Models\Post;
 
+
 class BlogController extends BaseController
 {
     protected $helpers = ['form', 'url', 'CIMail', 'CIFunctions', 'text'];
@@ -30,7 +31,7 @@ class BlogController extends BaseController
         $subcategory = new SubCategory();
         $post = new Post();
         $subcategory_data = $subcategory->asObject()->where('slug', $slug)->first();
-        $post_data = $post->asObject()->where('category_id', $subcategory_data->id)->paginate(6);
+        $post_data = $post->asObject()->where('category_id', $subcategory_data->id)->where('visibility', 1)->paginate(6);
         $data = [
             'pageTitle' => $subcategory_data->name,
             'posts' => $post_data,
