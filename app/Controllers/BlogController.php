@@ -3,8 +3,8 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
-use CodeIgniter\HTTP\ResponseInterface;
-use Faker\Extension\Helper;
+use App\Models\SubCategory;
+use App\Models\Post;
 
 class BlogController extends BaseController
 {
@@ -23,5 +23,20 @@ class BlogController extends BaseController
             'pageTitle' => get_settings()->blog_title
         ];
         return view('frontend/pages/post', $data);
+    }
+
+    public function categoryPosts($slug)
+    {
+        $subcategory = new SubCategory();
+        $post = new Post();
+        $subcategory_data = $subcategory->asObject()->where('slug', $slug)->first();
+        $post_data = $post->asObject()->where('category_id', $subcategory_data->id)->paginate(6);
+        $data = [
+            'pageTitle' => $subcategory_data->name,
+            'posts' => $post_data,
+            'pager' => $post->pager
+
+        ];
+        return view('frontend/pages/category_posts', $data);
     }
 }
