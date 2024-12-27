@@ -7,6 +7,7 @@ use CodeIgniter\Router\RouteCollection;
  */
 $routes->get('/', 'BlogController::index');
 $routes->get('post/(:any)', 'BlogController::readPost/$1', ['as' => 'read-post']);
+$routes->get('category/(:any)', 'BlogController::categoryPosts/$1', ['as' => 'category-posts']);
 
 $routes->group('admin', static function ($routes) {
     // All the routes below are for the authenticated user

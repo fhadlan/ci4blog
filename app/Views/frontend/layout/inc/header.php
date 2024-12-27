@@ -23,14 +23,13 @@
                             </a>
                             <div class="dropdown-menu">
                                 <?php foreach (get_sub_categories($category->id) as $subcategory): ?>
-                                    <a class="dropdown-item" href="#"><?= $subcategory->name ?></a>
-
+                                    <a class="dropdown-item" href="<?= route_to('category-posts', $subcategory->slug) ?>"><?= $subcategory->name ?></a>
                                 <?php endforeach; ?>
                             </div>
                         </li>
                     <?php endforeach; ?>
                     <?php foreach (get_dependant_sub_categories() as $category): ?>
-                        <li class="nav-item"> <a class="nav-link" href="#"><?= $category->name ?></a>
+                        <li class="nav-item"> <a class="nav-link" href="<?= route_to('category-posts', $category->slug) ?>"><?= $category->name ?></a>
                         </li>
                     <?php endforeach; ?>
                     <li class="nav-item"> <a class="nav-link" href="#">Contact</a>

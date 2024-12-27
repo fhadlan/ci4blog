@@ -170,3 +170,12 @@ if (!function_exists('get_sidebar_random_posts')) {
         return $random_posts;
     }
 }
+
+if (!function_exists('get_sidebar_sub_categories')) {
+    function get_sidebar_sub_categories()
+    {
+        $sub_category = new \App\Models\SubCategory();
+        $sub_categories = $sub_category->select('sub_categories.slug,name,count(posts.category_id) as number_of_posts')->join('posts', 'posts.category_id=sub_categories.id', 'left')->where('posts.visibility=1')->groupBy('sub_categories.id')->asObject()->orderBy('name', 'asc')->findAll();
+        return $sub_categories;
+    }
+}
