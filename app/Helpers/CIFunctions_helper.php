@@ -188,3 +188,20 @@ if (!function_exists('get_sidebar_latest_posts')) {
         return $latest_post;
     }
 }
+
+if (!function_exists('get_sidebar_tags')) {
+    function get_sidebar_tags()
+    {
+        $post = new Post();
+        $tags_array = [];
+        $posts = $post->asObject()->where('visibility', 1)->where('tags !=', '')->orderBy('created_at', 'desc')->findAll();
+        foreach ($posts as $post) {
+            $tags = explode(',', $post->tags);
+            foreach ($tags as $tag) {
+                $tags_array[] = $tag;
+            }
+        }
+        $tags_array = array_unique($tags_array);
+        return $tags_array;
+    }
+}

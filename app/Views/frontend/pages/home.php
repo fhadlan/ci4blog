@@ -34,6 +34,11 @@
                         </div>
                     </a>
                     <div class="card-body px-0 pb-1">
+                        <ul class="post-meta mb-2">
+                            <?php foreach (explode(',', get_home_main_latest_posts()->tags) as $tag) : ?>
+                                <li> <a href="<?= route_to('tag-posts', urlencode($tag)) ?>"><?= $tag ?></a>
+                                <?php endforeach; ?>
+                        </ul>
                         <h2 class="h1"><a class="post-title" href="<?= route_to('read-post', get_home_main_latest_posts()->slug) ?>"><?= get_home_main_latest_posts()->title ?></a></h2>
                         <p class="card-text"><?= limit_words(get_home_main_latest_posts()->content, 20) ?></p>
                         <div class="content"> <a class="read-more-btn" href="<?= route_to('read-post', get_home_main_latest_posts()->slug) ?>">Read Full Article</a>
@@ -55,7 +60,11 @@
                                 </div>
                             </a>
                             <div class="card-body px-0 pb-0">
-
+                                <ul class="post-meta mb-2">
+                                    <?php foreach (explode(',', $post->tags) as $tag) : ?>
+                                        <li> <a href="<?= route_to('tag-posts', urlencode($tag)) ?>"><?= $tag ?></a>
+                                        <?php endforeach; ?>
+                                </ul>
                                 <h2><a class="post-title" href="<?= route_to('read-post', $post->slug) ?>"><?= $post->title ?></a></h2>
                                 <p class="card-text"><?= limit_words($post->content, 20) ?></p>
                                 <div class="content"> <a class="read-more-btn" href="<?= route_to('read-post', $post->slug) ?>">Read Full Article</a>

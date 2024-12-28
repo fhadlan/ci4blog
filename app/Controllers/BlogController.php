@@ -40,4 +40,15 @@ class BlogController extends BaseController
         ];
         return view('frontend/pages/category_posts', $data);
     }
+    public function tagPosts($tag)
+    {
+        $post = new Post();
+        $post_data = $post->asObject()->like('tags', '%' . urldecode($tag) . '%')->where('visibility', 1)->paginate(6);
+        $data = [
+            'pageTitle' => $tag,
+            'posts' => $post_data,
+            'pager' => $post->pager
+        ];
+        return view('frontend/pages/tag_posts', $data);
+    }
 }
