@@ -2,7 +2,7 @@
 <?= $this->section('content'); ?>
 <div class="row">
     <div class="col-12">
-        <div class="breadcrumbs mb-4"> <a href="index.html">Home</a>
+        <div class="breadcrumbs mb-4"> <a href="<?= route_to('/') ?>">Home</a>
             <span class="mx-1">/</span> <a href="#!">Articles</a>
             <span class="mx-1">/</span> <a href="#!">Travel</a>
         </div>
@@ -49,8 +49,8 @@
                         </div>
                     </div>
                 </div>
+                <?php include('partial/sidebar_latest_post.php') ?>
                 <?php include('partial/sidebar-subcategories.php') ?>
-
             </div>
         </div>
     </div>

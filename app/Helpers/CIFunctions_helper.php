@@ -179,3 +179,12 @@ if (!function_exists('get_sidebar_sub_categories')) {
         return $sub_categories;
     }
 }
+
+if (!function_exists('get_sidebar_latest_posts')) {
+    function get_sidebar_latest_posts($except = null)
+    {
+        $post = new Post();
+        $latest_post = $post->asObject()->where('id !=', $except)->orderBy('created_at', 'desc')->findAll(4);
+        return $latest_post;
+    }
+}

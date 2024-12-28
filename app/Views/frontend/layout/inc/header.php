@@ -1,7 +1,7 @@
 <header class="navigation">
     <div class="container">
         <nav class="navbar navbar-expand-lg navbar-light px-0">
-            <a class="navbar-brand order-1 py-0" href="#">
+            <a class="navbar-brand order-1 py-0" href="<?= route_to('/') ?>">
                 <img loading="prelaod" decoding="async" class="img-fluid" src="/images/blog/<?= get_settings()->blog_logo ?>" alt="<?= get_settings()->blog_title ?>" style="max-height: 50px;">
             </a>
             <div class="navbar-actions order-3 ml-0 ml-md-4">
@@ -14,7 +14,7 @@
             </form>
             <div class="collapse navbar-collapse text-center order-lg-2 order-4" id="navigation">
                 <ul class="navbar-nav mx-auto mt-3 mt-lg-0">
-                    <li class="nav-item"> <a class="nav-link" href="">Home</a>
+                    <li class="nav-item"> <a class="nav-link" href="<?= route_to('/') ?>">Home</a>
                     </li>
                     <?php foreach (get_parent_categories() as $category): ?>
                         <li class="nav-item dropdown"> <a class="nav-link dropdown-toggle" href="#" role="button"
