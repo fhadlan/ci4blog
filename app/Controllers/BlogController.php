@@ -51,4 +51,25 @@ class BlogController extends BaseController
         ];
         return view('frontend/pages/tag_posts', $data);
     }
+
+    public function searchPosts()
+    {
+        $post = new Post();
+        $s = $this->request->getVar('s');
+        $searches = explode(' ', $s);
+        $builder = $post->asObject();
+        foreach ($searches as $search) {
+            $builder->orLike('title', '%' . $search . '%');
+            $builder->orLike('tags', '%' . $search . '%');
+        }
+        $builder->where('visibility', 1);
+        $post_data = $builder->paginate(6);
+        $data = [
+            'pageTitle' => $s,
+            'posts' => $post_data,
+            'pager' => $post->pager,
+            'search' => $s
+        ];
+        return view('frontend/pages/search_posts', $data);
+    }
 }
