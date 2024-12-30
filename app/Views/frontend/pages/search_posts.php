@@ -2,11 +2,7 @@
 <?= $this->section('content'); ?>
 <div class="row">
     <div class="col-12">
-        <div class="breadcrumbs mb-4"> <a href="<?= route_to('/') ?>">Home</a>
-            <span class="mx-1">/</span> <a href="#">Category</a>
-            <span class="mx-1">/</span> <a href="#"><?= $pageTitle; ?></a>
-        </div>
-        <h1 class="mb-4 border-bottom border-primary d-inline-block"><?= $pageTitle; ?></h1>
+        <h1 class="mb-4 border-bottom border-primary d-inline-block">Search Result : <?= $pageTitle; ?></h1>
     </div>
     <div class="col-lg-8 mb-5 mb-lg-0">
         <div class="row">

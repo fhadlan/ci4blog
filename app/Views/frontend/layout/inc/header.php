@@ -9,8 +9,16 @@
                     data-target="#navigation"> <span class="navbar-toggler-icon"></span>
                 </button>
             </div>
-            <form action="<?= route_to('search-posts') ?>" method="get" class="search order-lg-3 order-md-2 order-3 ml-auto">
-                <input id="search-query" name="s" type="search" placeholder="Search..." autocomplete="off" value="<?= isset($search) ? $search : '' ?>">
+
+            <form action="<?= route_to('search-posts') ?>" method="get" class=" order-lg-3 order-md-2 order-3 ml-auto">
+                <div class="input-group">
+                    <div class="form-outline">
+                        <input id="search-query" name="s" type="search" class="form-control" placeholder="Search..." autocomplete="off" value="<?= isset($search) ? $search : '' ?>">
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
             </form>
             <div class="collapse navbar-collapse text-center order-lg-2 order-4" id="navigation">
                 <ul class="navbar-nav mx-auto mt-3 mt-lg-0">

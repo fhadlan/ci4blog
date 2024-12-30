@@ -10,7 +10,7 @@
                 </li>
                 <li class="page-item">
                     <a class="page-link" href="<?= $pager->getPreviousPage() ?>" aria-label="Previous">
-                        <span aria-hidden="true">&#x2190;</span>
+                        <span aria-hidden="true"><b>&#x2190;</b></span>
                     </a>
                 </li>
             <?php endif; ?>
@@ -26,7 +26,7 @@
             <?php if ($pager->hasNextPage()): ?>
                 <li class="page-item">
                     <a class="page-link" href="<?= $pager->getNextPage() ?>" aria-label="Next">
-                        <span aria-hidden="true">&#x2192;</span>
+                        <span aria-hidden="true"><b>&#x2192;</b></span>
                     </a>
                 </li>
                 <li class="page-item">
