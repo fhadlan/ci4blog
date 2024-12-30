@@ -20,10 +20,20 @@ class BlogController extends BaseController
 
     public function readPost($slug)
     {
-        $data = [
-            'pageTitle' => get_settings()->blog_title
-        ];
-        return view('frontend/pages/post', $data);
+        $post = new Post();
+        try {
+            $post_data = $post->asObject()->where('slug', $slug)->first();
+            if (empty($post_data)) {
+                throw new \Exception('Post not found');
+            }
+            $data = [
+                'pageTitle' => $post_data->title,
+                'post' => $post_data
+            ];
+            return view('frontend/pages/single_post', $data);
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
     }
 
     public function categoryPosts($slug)
