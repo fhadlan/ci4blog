@@ -205,3 +205,25 @@ if (!function_exists('get_sidebar_tags')) {
         return $tags_array;
     }
 }
+
+if (!function_exists('get_related_posts')) {
+    function get_related_posts($post_id, $tags)
+    {
+        $post = new Post();
+        $tags_arr = explode(',', $tags);
+        if (count($tags_arr) > 0) {
+            $builder = $post->asObject();
+            foreach ($tags_arr as $tag) {
+                $builder->orLike('tags', $tag, 'both');
+                $builder->Where('id !=', $post_id);
+            }
+            $builder->where('visibility', 1);
+            $builder->limit(3);
+            $related_posts = $builder->get()->getResult();
+        } else {
+            $related_posts = [];
+        }
+
+        return $related_posts;
+    }
+}

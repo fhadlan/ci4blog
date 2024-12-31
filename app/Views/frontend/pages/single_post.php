@@ -1,4 +1,22 @@
 <?= $this->extend('frontend/layout/pages-layout'); ?>
+<?= $this->section('page_meta'); ?>
+<meta name="keywords" content="<?= $post->meta_keywords ?>" />
+<meta name="description" content="<?= $post->meta_description ?>" />
+<link rel="canonical" href="<?= current_url() ?>" />
+<meta itemprop="name" content="<?= $post->title ?>" />
+<meta itemprop="description" content="<?= $post->meta_description ?>" />
+<meta itemprop="image" content="<?= base_url('images/posts/' . $post->image) ?>" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="<?= $post->title ?>" />
+<meta property="og:description" content="<?= $post->meta_description ?>" />
+<meta property="og:image" content="<?= base_url('images/posts/' . $post->image) ?>" />
+<meta property="og:url" content="<?= current_url() ?>" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:domain" content="<?= base_url() ?>" />
+<meta name="twitter:title" property="og:title" content="<?= $post->title ?>" />
+<meta name="twitter:description" property="og:description" content="<?= $post->meta_description ?>" />
+<meta name="twitter:image" property="og:image" content="<?= base_url('images/posts/' . $post->image) ?>" />
+<?= $this->endSection(); ?>
 <?= $this->section('content'); ?>
 <div class="row">
     <div class="col-lg-8 mb-5 mb-lg-0">
@@ -11,7 +29,11 @@
             </ul>
             <h1 class="my-3"><?= $post->title ?></h1>
             <ul class="post-meta mb-4">
-                <?php foreach (explode(',', $post->tags) as $tag) : ?>
+                <?php
+
+                use function PHPUnit\Framework\isEmpty;
+
+                foreach (explode(',', $post->tags) as $tag) : ?>
                     <li> <a href="<?= route_to('tag-posts', urlencode($tag)) ?>"><?= $tag ?></a></li>
                 <?php endforeach; ?>
             </ul>
@@ -19,6 +41,27 @@
                 <?= $post->content ?>
             </div>
         </article>
+        <div class="mt-5">
+            <div class="widget">
+                <h2 class="widget-title">Related Posts</h2>
+                <div class="widget-body">
+                    <div class="widget-list">
+                        <?php
+                        foreach (get_related_posts($post->id, $post->tags) as $rpost) : ?>
+                            <a class="media align-items-center" href="<?= route_to('read-post', $rpost->slug) ?>">
+                                <img loading="lazy" decoding="async" src="/images/posts/thumb_<?= $rpost->image ?>" alt="Post Thumbnail" class="w-100">
+                                <div class="media-body ml-3">
+                                    <h3 style="margin-top:-5px"><?= $rpost->title ?></h3>
+                                    <p class="mb-0 small"><?= limit_words($rpost->content, 10) ?> </p>
+                                </div>
+                            </a>
+                        <?php endforeach;
+                        ?>
+
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="mt-5">
             <div id="disqus_thread"></div>
             <script type="application/javascript">
@@ -58,7 +101,6 @@
                         </div>
                     </div>
                 </div>
-
                 <?php include('partial/sidebar_latest_post.php') ?>
                 <?php include('partial/sidebar-subcategories.php') ?>
                 <?php include('partial/sidebar_tags.php') ?>
