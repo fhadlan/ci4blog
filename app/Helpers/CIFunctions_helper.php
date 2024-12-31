@@ -215,9 +215,10 @@ if (!function_exists('get_related_posts')) {
             $builder = $post->asObject();
             foreach ($tags_arr as $tag) {
                 $builder->orLike('tags', $tag, 'both');
-                $builder->Where('id !=', $post_id);
+                $builder->where('id !=', $post_id);
             }
             $builder->where('visibility', 1);
+            $builder->orderBy('rand()');
             $builder->limit(3);
             $related_posts = $builder->get()->getResult();
         } else {
