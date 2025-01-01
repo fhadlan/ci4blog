@@ -41,6 +41,23 @@
                 <?= $post->content ?>
             </div>
         </article>
+
+        <div class="prev-next-posts mt-5">
+            <div class="row justify-content-between p-4">
+                <div class="col-md-6 mb-2 shadow-sm rounded p-3">
+                    <a href="<?= route_to('read-post', get_prev_post($post->id)->slug) ?>">
+                        <h4>&#171; Previous Post</h4>
+                        <p class="text-primary"><?= get_prev_post($post->id)->title ?></p>
+                    </a>
+                </div>
+                <div class="col-md-6 mb-2 text-right shadow-sm rounded p-3">
+                    <a href="<?= route_to('read-post', get_next_post($post->id)->slug) ?>">
+                        <h4>Next Post &#187;</h4>
+                        <p class="text-primary"><?= get_next_post($post->id)->title ?></p>
+                    </a>
+                </div>
+            </div>
+        </div>
         <div class="mt-5">
             <div class="widget">
                 <h2 class="widget-title">Related Posts</h2>

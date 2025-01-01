@@ -228,3 +228,21 @@ if (!function_exists('get_related_posts')) {
         return $related_posts;
     }
 }
+
+if (!function_exists('get_prev_post')) {
+    function get_prev_post($post_id)
+    {
+        $post = new Post();
+        $prev_post = $post->select('title,slug')->asObject()->where('id <', $post_id)->where('visibility', 1)->orderBy('created_at', 'desc')->first();
+        return $prev_post;
+    }
+}
+
+if (!function_exists('get_next_post')) {
+    function get_next_post($post_id)
+    {
+        $post = new Post();
+        $next_post = $post->select('title,slug')->asObject()->where('id >', $post_id)->where('visibility', 1)->orderBy('created_at', 'desc')->first();
+        return $next_post;
+    }
+}
