@@ -126,3 +126,21 @@
     </div>
 </div>
 <?= $this->endSection(); ?>
+
+<?= $this->section('stylesheets') ?>
+<link rel="stylesheet" href="/socialshare/jquery.floating-social-share.min.css" />
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
+<script src="/socialshare/jquery.floating-social-share.min.js"></script>
+<script>
+    $("body").floatingSocialShare({
+        buttons: [
+            "facebook", "linkedin", "pinterest", "reddit",
+            "telegram", "tumblr", "twitter", "viber", "vk", "whatsapp"
+        ],
+        text: "share with: ",
+        url: "<?= current_url() ?>",
+    });
+</script>
+<?= $this->endSection() ?>
