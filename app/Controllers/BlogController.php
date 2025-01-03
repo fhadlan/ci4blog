@@ -82,4 +82,69 @@ class BlogController extends BaseController
         ];
         return view('frontend/pages/search_posts', $data);
     }
+
+    public function contactUs()
+    {
+        $data = [
+            'pageTitle' => 'Contact Us'
+        ];
+        return view('frontend/pages/contact_us', $data);
+    }
+
+    public function contactUsSend()
+    {
+        $request = \Config\Services::request();
+        $isValid = $this->validate([
+            'name' => [
+                'rules' => 'required',
+                'errors' => [
+                    'required' => 'Name is required'
+                ]
+            ],
+            'email' => [
+                'rules' => 'required|valid_email',
+                'errors' => [
+                    'required' => 'Email is required',
+                    'valid_email' => 'Email is invalid'
+                ]
+            ],
+            'subject' => [
+                'rules' => 'required',
+                'errors' => [
+                    'required' => 'Subject is required'
+                ]
+            ],
+            'message' => [
+                'rules' => 'required',
+                'errors' => [
+                    'required' => 'Message is required'
+                ]
+            ]
+        ]);
+
+        if (!$isValid) {
+            $data = [
+                'pageTitle' => 'Contact Us',
+                'validation' => $this->validator
+            ];
+        } else {
+            $mail_body = 'Messege from : <b>' . $request->getPost('name') . '</b><br>';
+            $mail_body = '_________________________________________________________<br>';
+            $mail_body = $request->getPost('message') . '<br>';
+            $mailConfig = array(
+                'mail_from_email' => $request->getPost('email'),
+                'mail_from_name' => $request->getPost('name'),
+                'mail_recipient_email' => get_settings()->blog_email,
+                'mail_recipient_name' => get_settings()->blog_title,
+                'mail_subject' => $request->getPost('subject'),
+                'mail_body' => $mail_body
+            );
+            if (sendEmail($mailConfig)) {
+                return redirect()->back()->with('success', 'Message sent successfully.');
+            } else {
+                return redirect()->back()->with('error', 'Message failed to send. Please try again later.');
+            }
+        }
+        return view('frontend/pages/contact_us', $data);
+    }
 }

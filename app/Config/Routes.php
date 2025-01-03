@@ -10,6 +10,8 @@ $routes->get('post/(:any)', 'BlogController::readPost/$1', ['as' => 'read-post']
 $routes->get('category/(:any)', 'BlogController::categoryPosts/$1', ['as' => 'category-posts']);
 $routes->get('/tag/(:any)', 'BlogController::tagPosts/$1', ['as' => 'tag-posts']);
 $routes->get('/search', 'BlogController::searchPosts', ['as' => 'search-posts']);
+$routes->get('/contact-us', 'BlogController::contactUs', ['as' => 'contact-us']);
+$routes->post('/contact-us', 'BlogController::contactUsSend', ['as' => 'contact-us-send']);
 
 $routes->group('admin', static function ($routes) {
     // All the routes below are for the authenticated user

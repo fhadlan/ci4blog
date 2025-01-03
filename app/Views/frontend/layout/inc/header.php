@@ -40,7 +40,7 @@
                         <li class="nav-item"> <a class="nav-link" href="<?= route_to('category-posts', $category->slug) ?>"><?= $category->name ?></a>
                         </li>
                     <?php endforeach; ?>
-                    <li class="nav-item"> <a class="nav-link" href="#">Contact</a>
+                    <li class="nav-item"> <a class="nav-link" href="<?= route_to('contact-us') ?>">Contact</a>
                     </li>
                 </ul>
             </div>
