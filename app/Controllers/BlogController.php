@@ -132,7 +132,7 @@ class BlogController extends BaseController
             $mail_body = '_________________________________________________________<br>';
             $mail_body = $request->getPost('message') . '<br>';
             $mailConfig = array(
-                'mail_from_email' => $request->getPost('email'),
+                'mail_from_email' => env('EMAIL_FROM_ADDRESS'),
                 'mail_from_name' => $request->getPost('name'),
                 'mail_recipient_email' => get_settings()->blog_email,
                 'mail_recipient_name' => get_settings()->blog_title,
