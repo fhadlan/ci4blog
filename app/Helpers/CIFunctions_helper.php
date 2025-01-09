@@ -247,3 +247,12 @@ if (!function_exists('get_next_post')) {
         return $next_post;
     }
 }
+
+if (!function_exists('get_about_me')) {
+    function get_about_me()
+    {
+        $users = new User();
+        $user = $users->asObject()->where('id', 1)->first();
+        return $user;
+    }
+}

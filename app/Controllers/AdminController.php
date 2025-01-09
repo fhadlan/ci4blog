@@ -20,8 +20,19 @@ class AdminController extends BaseController
 
     public function index()
     {
+        $post = new Post();
+        $subcategory = new SubCategory();
+        $category = new Category();
+        $npost = $post->where('visibility', 1)->countAllResults();
+        $latest = $post->select('title,posts.slug,name')->asObject()->join('sub_categories', 'sub_categories.id = posts.category_id', 'left')->where('visibility', 1)->orderBy('posts.created_at', 'DESC')->findAll(5);
+        $nsub = $subcategory->countAllResults();
+        $categories = $category->select('name')->asObject()->findAll();
         $data = [
-            'pageTitle' => 'Dashboard'
+            'pageTitle' => 'Dashboard',
+            'numberOfPosts' => $npost,
+            'numberOfSubCategories' => $nsub,
+            'categories' => $categories,
+            'latestPosts' => $latest
         ];
         return view('backend/pages/home', $data);
     }

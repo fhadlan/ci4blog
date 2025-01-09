@@ -43,16 +43,7 @@
     <div class="col-lg-4">
         <div class="widget-blocks">
             <div class="row">
-                <div class="col-lg-12">
-                    <div class="widget">
-                        <div class="widget-body">
-                            <img loading="lazy" decoding="async" src="/frontend/images/author.jpg" alt="About Me" class="w-100 author-thumb-sm d-block">
-                            <h2 class="widget-title my-3">Hootan Safiyari</h2>
-                            <p class="mb-3 pb-2">Hello, I’m Hootan Safiyari. A Content writter, Developer and Story teller. Working as a Content writter at CoolTech Agency. Quam nihil …</p> <a href="about.html" class="btn btn-sm btn-outline-primary">Know
-                                More</a>
-                        </div>
-                    </div>
-                </div>
+                <?php include('partial/about_me.php') ?>
                 <?php include('partial/sidebar_latest_post.php') ?>
                 <?php include('partial/sidebar-subcategories.php') ?>
                 <?php include('partial/sidebar_tags.php') ?>
