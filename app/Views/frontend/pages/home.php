@@ -114,7 +114,7 @@
     <div class="col-lg-4">
         <div class="widget-blocks">
             <div class="row">
-                <?php include('partial/about_me.php') ?>
+                <?php include('partial/sidebar_about_me.php') ?>
                 <div class="col-lg-12 col-md-6">
                     <div class="widget">
                         <h2 class="section-title mb-3">Random Posts</h2>

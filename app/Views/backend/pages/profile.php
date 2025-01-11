@@ -71,7 +71,7 @@
                                     </div>
                                     <div class="form-group">
                                         <label for="">Bio</label>
-                                        <textarea name="bio" class="form-control" placeholder="Enter bio"><?= get_user()->bio ?></textarea>
+                                        <textarea name="bio" id="bio" class="form-control" placeholder="Enter bio"><?= get_user()->bio ?></textarea>
                                         <span class="text-danger error-text bio_error"></span>
                                     </div>
 
@@ -130,9 +130,13 @@
 </div>
 
 <?php $this->endSection() ?>
-
+<?php $this->section('stylesheets') ?>
+<link rel="stylesheet" type="text/css" href="/backend/src/plugins/bootstrap-wysihtml5-master/bootstrap-wysihtml5.css">
+<?php $this->endSection() ?>
 <?php $this->section('scripts') ?>
+<script src="/backend/src/plugins/bootstrap-wysihtml5-master/bootstrap-wysihtml5.js"></script>
 <script>
+    $('#bio').wysihtml5();
     // AJAX
     $('#personal_details_form').on('submit', function(e) {
         e.preventDefault();
@@ -203,7 +207,7 @@
                 $(form).find('span.error-text').text('');
             },
             success: function(response) {
-                
+
                 console.log(response.status);
                 if ($.isEmptyObject(response.error)) {
                     if (response.status == 1) {

@@ -39,7 +39,7 @@
     <div class="col-lg-4">
         <div class="widget-blocks">
             <div class="row">
-                <?php include('partial/about_me.php') ?>
+                <?php include('partial/sidebar_about_me.php') ?>
                 <?php include('partial/sidebar_latest_post.php') ?>
                 <?php include('partial/sidebar-subcategories.php') ?>
                 <?php include('partial/sidebar_tags.php') ?>

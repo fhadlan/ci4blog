@@ -30,9 +30,6 @@
             <h1 class="my-3"><?= $post->title ?></h1>
             <ul class="post-meta mb-4">
                 <?php
-
-                use function PHPUnit\Framework\isEmpty;
-
                 foreach (explode(',', $post->tags) as $tag) : ?>
                     <li> <a href="<?= route_to('tag-posts', urlencode($tag)) ?>"><?= $tag ?></a></li>
                 <?php endforeach; ?>
@@ -106,7 +103,7 @@
     <div class="col-lg-4">
         <div class="widget-blocks">
             <div class="row">
-                <?php include('partial/about_me.php') ?>
+                <?php include('partial/sidebar_about_me.php') ?>
                 <?php include('partial/sidebar_latest_post.php') ?>
                 <?php include('partial/sidebar-subcategories.php') ?>
                 <?php include('partial/sidebar_tags.php') ?>

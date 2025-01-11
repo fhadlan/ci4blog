@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Controllers\BaseController;
 use App\Models\SubCategory;
 use App\Models\Post;
+use App\Models\User;
 
 
 class BlogController extends BaseController
@@ -146,5 +147,16 @@ class BlogController extends BaseController
             }
         }
         return view('frontend/pages/contact_us', $data);
+    }
+
+    public function about()
+    {
+        $users = new User();
+        $user = $users->select('name,bio,picture')->asObject()->where('id', 1)->first();
+        $data = [
+            'pageTitle' => 'About',
+            'user' => $user
+        ];
+        return view('frontend/pages/about', $data);
     }
 }
